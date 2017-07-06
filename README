@@ -1,0 +1,31 @@
+bcnm - a better client network manager
+--------------------------------------
+
+ bcnm is currently a set of tools to control the client side of a
+WiFi connection.
+
+ Ultimately, it aimes to become a network manager for client machines,
+similar to NetworkManager, wicd or ConnMan.
+ It works out-of-the-box on Linux and is easily portable to other
+Unix systems.
+
+ bcnm does not perform any low-level, hardware-controlling work itself.
+It just implements a state machine and send commands to other processes
+such as wpa_supplicant and a user-configured DHCP client.
+
+ See http://skarnet.org/software/bcnm/ for details.
+
+
+* Installation
+  ------------
+
+ See the INSTALL file.
+
+
+* Contact information
+  -------------------
+
+ Laurent Bercot <ska-skaware at skarnet.org>
+
+ Please use the <skaware at list.skarnet.org> mailing-list for
+questions about bcnm.

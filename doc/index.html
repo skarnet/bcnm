@@ -1,0 +1,110 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>bcnm - a better client network manager </title>
+    <meta name="Description" content="bcnm - a better client network manager" />
+    <meta name="Keywords" content="bcnm client network manager ethernet wifi laurent bercot ska skarnet networkmanager wicd connman wpa_supplicant" />
+    <!-- <link rel="stylesheet" type="text/css" href="//skarnet.org/default.css" /> -->
+  </head>
+<body>
+
+<p>
+<a href="//skarnet.org/software/">Software</a><br />
+<a href="//skarnet.org/">skarnet.org</a>
+</p>
+
+<h1> bcnm </h1>
+
+<h2> What is it&nbsp;? </h2>
+
+<p>
+ bcnm is a client network manager: it automatically handles network
+connections for a client machine. It supports Ethernet and Wi-Fi.
+IP addresses can be attributed statically or via DHCP.
+</p>
+
+<p>
+<strong>
+ This is very much a work in progress. Do not expect full functionality
+in the short or even middle term.
+</strong>
+</p>
+
+<hr />
+
+<h2> Installation </h2>
+
+<h3> Requirements </h3>
+
+<ul>
+ <li> A Linux-based system with a standard C development environment </li>
+ <li> GNU make, version 3.81 or later </li>
+ <li> <a href="//skarnet.org/software/skalibs/">skalibs</a> version
+2.5.1.1 or later </li>
+</ul>
+
+<h3> Licensing </h3>
+
+<p>
+ bcnm is free software. It is available under the
+<a href="http://opensource.org/licenses/ISC">ISC license</a>.
+</p>
+
+<h3> Download </h3>
+
+<ul>
+ <li> The current released version of bcnm is
+<a href="bcnm-0.0.1.0.tar.gz">0.0.1.0</a>. </li>
+ <li> Alternatively, you can checkout a copy of the
+<a href="//git.skarnet.org/cgi-bin/cgit.cgi/bcnm/">bcnm
+git repository</a>:
+<pre> git clone git://git.skarnet.org/bcnm </pre> </li>
+ <li> There's also a
+<a href="https://github.com/skarnet/bcnm">GitHub mirror</a>
+of the bcnm git repository. </li>
+</ul>
+
+<h3> Compilation </h3>
+
+<ul>
+ <li> See the enclosed INSTALL file for installation details. </li>
+</ul>
+
+<h3> Upgrade notes </h3>
+
+<ul>
+ <li> <a href="upgrade.html">This page</a> lists the differences to be aware of between
+the previous versions of bcnm and the current one. </li>
+</ul>
+
+<hr />
+
+<h2> Reference </h2>
+
+<h3> Commands </h3>
+
+<p>
+ All these commands exit 111 if they encounter a temporary error, and
+100 if they encounter a permanent error - such as a misuse.
+</p>
+
+<ul>
+</ul>
+
+<h3> Libraries </h3>
+
+<ul>
+ <li> <a href="libwpactrl/">The <tt>wpactrl</tt> library interface</a> </li>
+</ul>
+
+<h2> Related resources </h2>
+
+<ul>
+ <li> <tt>bcnm</tt> is discussed on the
+<a href="//skarnet.org/lists.html#skaware">skaware</a> mailing-list. </li>
+</ul>
+
+</body>
+</html>

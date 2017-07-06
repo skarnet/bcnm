@@ -1,0 +1,9 @@
+*.o
+*.a
+*.lo
+*.so
+*.so.*
+*.a.xyzzy
+*.so.xyzzy
+config.mak
+src/include/bcnm/config.h

@@ -1,0 +1,12 @@
+wpactrl_command.o
+wpactrl_end.o
+wpactrl_fd_recv.o
+wpactrl_fd_timed_recv.o
+wpactrl_filter_add.o
+wpactrl_filter_exact_search.o
+wpactrl_filter_remove.o
+wpactrl_query.o
+wpactrl_querysa.o
+wpactrl_start.o
+wpactrl_update.o
+wpactrl_zero.o

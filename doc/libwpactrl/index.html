@@ -1,0 +1,233 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>bcnm: the wpactrl library interface</title
+    <meta name="Description" content="bcnm: the wpactrl library interface" />
+    <meta name="Keywords" content="bcnm library wpactrl libwpactrl wpactrl.h wpa_supplicant command" />
+    <!-- <link rel="stylesheet" type="text/css" href="//skarnet.org/default.css" /> -->
+  </head>
+<body>
+
+<p>
+<a href="../index.html">bcn,</a><br />
+<a href="//skarnet.org/software/">Software</a><br />
+<a href="//skarnet.org/">skarnet.org</a>
+</p>
+
+<h1> The <tt>wpactrl</tt> library interface </h1>
+
+<p>
+<tt>wpactrl</tt> is a library designed to interface a client
+with the <a href="https://w1.fi/wpa_supplicant/">wpa_supplicant</a>
+program, in a smaller, cleaner, more user-friendly and more
+packager-friendly way than the <tt>wpa_ctrl</tt> interface that
+comes with the <a href="https://w1.fi/wpa_supplicant/">wpa_supplicant</a>
+distribution.
+</p>
+
+<h2> Compiling </h2>
+
+<ul>
+ <li> Use <tt>#include &lt;bcnm/wpactrl.h&gt;</tt> </li>
+</ul>
+
+<h2> Linking </h2>
+
+<ul>
+ <li> Make sure the bcnm libraries, as well as the skalibs
+libraries, are visible in your library search path. </li>
+ <li> Link against <tt>-lwpactrl</tt> and <tt>-lskarnet</tt>.
+Also add <tt>`cat $sysdeps/socket.lib $sysdeps/tainnow.lib`</tt>
+to the end of your command line invoking the linker, in order
+to be portable to libcs that put socket or time functions into
+separate libraries.
+(<tt>$sysdeps</tt> stands for your skalibs sysdeps directory.) </li>
+</ul>
+
+
+<h2> Programming </h2>
+
+<p>
+ The <tt>bcnm/wpactrl.h</tt> header is the reference for the exact
+function prototypes.
+</p>
+
+<h3> General usage </h3>
+
+<p>
+ <tt>libwpactrl</tt> stores its information in a <tt>wpactrl_t</tt> structure.
+Such a structure must be allocated (can be declared in the stack) and
+initialized to WPACTRL_ZERO before use. The address of that <tt>wpactrl_t</tt>
+structure is then used as a handle and given as an argument to all the
+<tt>wpactrl_*</tt> function calls.
+</p>
+
+<h3> Connections </h3>
+
+<p>
+ A <tt>wpactrl_t</tt> instance represents two connections to a <tt>wpa_supplicant</tt>
+program: an <em>attached</em> one and a <em>detached</em> one. For proper operation,
+it is important to regularly read the data from the <em>attached</em> connection. This is
+achieved by calling the <tt>wpactrl_update()</tt> function whenever data is available
+on the <em>attached</em> connection; this is notified by the connection's fd becoming
+readable. The attached connection's fd can be obtained via the <tt>wpactrl_fd()</tt>
+function. So, proper usage of a <tt>wpactrl_t</tt> instance involves an asynchronous
+event loop.
+</p>
+
+<h3> Synchronous functions </h3>
+
+<p>
+ The bulk of <tt>libwpactrl</tt> functions take two extra arguments at the end, named
+<em>deadline</em> and <em>stamp</em>, of type
+<a href="//skarnet.org/software/skalibs/libstddjb/tai.html">tain_t</a>. This means
+they are synchronous function calls, and the extra arguments are there to ensure
+those calls do not block forever.
+</p>
+
+<p>
+<em>deadline</em> is an absolute date: if the function has not returned when this
+date is reached, it will immediately return with a code meaning "failure" and
+<tt>errno</tt> set to ETIMEDOUT. <em>stamp</em> must be first initialized to an
+accurate enough approximation of the current time, for instance via skalibs'
+<tt>tain_now()</tt> function; it will then be automatically updated by the
+libwpactrl function calls to always contain (an accurate enough approximation
+of) the current time.
+</p>
+
+<p>
+ <a href="//skarnet.org/software/skalibs/">skalibs</a> can keep track of the
+timestamp for you, in the global <tt>STAMP</tt> variable. All <tt>libwpactrl</tt>
+functions taking <em>deadline</em> and <em>stamp</em> arguments also have a
+version with a name ending in <tt>_g</tt>, that only takes a <tt>deadline</tt>
+argument, and assumes the <tt>STAMP</tt> variable always contains (an accurate
+enough approximation of) the current time.
+<p>
+
+<p>
+ Those synchronous function calls normally return almost instantly: there should
+be no blocking code path between the function call and its return. Nevertheless,
+since they involve communication with a complex <tt>wpa_supplicant</tt> process,
+it's impossible to guarantee that they will never block, so the deadline pattern
+is there to set a cap on the amount of time they block. A deadline set a few
+seconds into the future should be enough.
+</p>
+
+
+<h3> Starting and stopping a session </h3>
+
+<p>
+<code> int wpactrl_start (wpactrl_t *a, char const *path, tain_t const *deadline, tain_t *stamp) </code> <br />
+Starts a session with a <tt>wpa_supplicant</tt> instance listening on a Unix socket
+at <em>path</em>.
+The function returns 1 if it succeeds, or 0 (and sets errno) if
+it fails.
+</p>
+
+<p>
+<code> int wpactrl_end (wpactrl_t *a) </code> <br />
+Ends the session, freeing all used resources.
+</p>
+
+<h3> Low-level command sending </h3>
+
+<p>
+<code> ssize_t wpactrl_query (wpactrl_t *a, char const *q, size_t qlen, char *ans, size_t anslen, tain_t const *deadline, tain_t *stamp) </code> <br />
+Sends the query <em>q</em> of size <em>qlen</em> to the connected instance
+of wpa_supplicant, and reads its answer into the buffer pointed to by
+<em>ans</em>. Returns -1 in case of failure, or the number of bytes of
+the answer in case of success. Returns -1 with errno set to EMSGSIZE if
+the answer is bigger than <em>anslen</em> bytes.
+</p>
+
+<p>
+<code> ssize_t wpactrl_querysa (wpactrl_t *a, char const *q, size_t qlen, stralloc *sa, tain_t const *deadline, tain_t *stamp) </code> <br />
+Sends the query <em>q</em> of size <em>qlen</em> to the connected instance
+of wpa_supplicant, and reads its answer into the
+<a href="//skarnet.org/software/skalibs/libstddjb/stralloc.html">stralloc</a>
+pointed to by <em>sa</em>. Returns 1 if it succeeds and 0 if it fails.
+</p>
+
+<p>
+<code> wparesponse_t wpactrl_command (wpactrl_t *a, char const *q, size_t qlen, tain_t const *deadline, tain_t *stamp) </code> <br />
+Sends the command <em>q</em> of size <em>qlen</em> to the connected instance
+of wpa_supplicant, and returns its answer under the form of a
+<tt>wparesponse_t</tt>, which is an enumeration defined in the
+<tt>bcnm/wpactrl.h</tt> header. This function is meant to be used
+with commands returning a well-known value, such as <tt>RECONFIGURE</tt>
+(returning <tt>OK</tt> or <tt>FAIL</tt>) or <tt>PING</tt>
+(returning <tt>PONG</tt>).
+</p>
+
+<h3> Reading from the attached connection </h3>
+
+<p>
+<code> int wpactrl_update (wpactrl_t *a) </code> <br />
+Reads unsolicited messages from wpa_supplicant. If the messages
+are whitelisted, it keeps them, otherwise it discards them.
+The function returns the number of messages that have been read,
+or -1 in case of failure. A positive number does not mean that
+all pending messages have been read: there is a cap on the
+number of messages that can be consecutively read, to prevent
+a spamming wpa_supplicant from monopolizing your program.
+</p>
+
+<p>
+<code> char *wpactrl_data (wpactrl_t *a) </code> <br />
+Returns a pointer to the unsolicited messages from wpa_supplicant
+that have been read by <tt>wpactrl_update()</tt> but haven't been
+acknowledged yet.
+</p>
+
+<p>
+<code> char *wpactrl_datalen (wpactrl_t *a) </code> <br />
+Returns the length of unsolicited messages from wpa_supplicant
+that have been read by <tt>wpactrl_update()</tt> but haven't been
+acknowledged yet.
+</p>
+
+<p>
+<code> void wpactrl_ackdata (wpactrl_t *a) </code>
+Acknowledges reading the latest batch of unsolicited messages
+from wpa_supplicant: allows the next invocation of
+<tt>wpactrl_update()</tt> to reuse the storage.
+</p>
+
+<p>
+<code> int wpactrl_filter_add (wpactrl_t *a, char const *prefix) </code> <br />
+Adds <em>prefix</em> to the whitelist. Unsolicited messages from
+wpa_supplicant will be stored and made available to the application
+if they start with <tt>%lt;</tt><em>priority</em><tt>&gt;</tt><em>prefix</em>,
+<em>priority</em> being a single nonzero digit. If the filter is
+activated (which is the default), then only messages matching prefixes
+registered via <tt>wpactrl_filter_add()</tt> will be stored, and all
+other messages will be discarded. The function returns
+1 if it succeeds and 0 if it fails.
+</p>
+
+<p>
+<code> void wpactrl_filter_remove (wpactrl_t *a, char const *prefix) </code> <br />
+Removes <em>prefix</em> from the whitelist.
+</p>
+
+<p>
+<code> void wpactrl_filter_activate (wpactrl_t *a) </code>
+Activates the message filter. Unsolicited messages from
+wpa_supplicant will be discarded unless they are explicitly
+whitelisted by a call to <tt>wpactrl_filter_add()</tt>. This
+is the default.
+</p>
+
+<p>
+<code> void wpactrl_filter_deactivate (wpactrl_t *a) </code>
+Dectivates the message filter. All the unsolicited messages from
+wpa_supplicant will be stored and made available to the
+application.
+</p>
+
+<h3> Higher-level commands </h3>
+
+</body>
+</html>
