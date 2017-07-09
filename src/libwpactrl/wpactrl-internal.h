@@ -8,7 +8,7 @@
 #include <skalibs/tai.h>
 #include <bcnm/wpactrl.h>
 
-#define WPACTRL_PACKET_MAX 8192
+#define WPACTRL_PACKET_MAX 8191
 #define WPACTRL_RECV_MAX 32
 
 extern ssize_t wpactrl_fd_recv (int, char *, size_t) ;

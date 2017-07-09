@@ -175,24 +175,18 @@ a spamming wpa_supplicant from monopolizing your program.
 </p>
 
 <p>
-<code> char *wpactrl_data (wpactrl_t *a) </code> <br />
-Returns a pointer to the unsolicited messages from wpa_supplicant
-that have been read by <tt>wpactrl_update()</tt> but haven't been
-acknowledged yet.
+<code> char *wpactrl_msg (wpactrl_t *a) </code> <br />
+Returns a pointer to the first unsolicited message from
+wpa_supplicant that has been read by <tt>wpactrl_update()</tt> but
+has not been acknowledged yet. If there's no such message,
+returns NULL.
 </p>
 
 <p>
-<code> char *wpactrl_datalen (wpactrl_t *a) </code> <br />
-Returns the length of unsolicited messages from wpa_supplicant
-that have been read by <tt>wpactrl_update()</tt> but haven't been
-acknowledged yet.
-</p>
-
-<p>
-<code> void wpactrl_ackdata (wpactrl_t *a) </code>
-Acknowledges reading the latest batch of unsolicited messages
-from wpa_supplicant: allows the next invocation of
-<tt>wpactrl_update()</tt> to reuse the storage.
+<code> void wpactrl_nextmsg (wpactrl_t *a) </code> <br />
+Acknowledges reading of one unsolicited message from wpa_supplicant.
+The next invocation of <tt>wpactrl_msg()</tt> will point to the next
+one.
 </p>
 
 <p>

@@ -5,8 +5,10 @@
 
 #include <sys/types.h>
 #include <stdint.h>
+#include <skalibs/gccattributes.h>
 #include <skalibs/tai.h>
 #include <skalibs/stralloc.h>
+#include <skalibs/genalloc.h>
 
 typedef enum wparesponse_e wparesponse_t, *wparesponse_t_ref ;
 enum wparesponse_e
@@ -36,10 +38,11 @@ struct wpactrl_s
   int fds ;
   int fda ;
   uint32_t options ;
+  size_t datahead ;
   stralloc data ;
   stralloc filters ;
 } ;
-#define WPACTRL_ZERO { .fds = -1, .fda = -1, .options = 0, .data = STRALLOC_ZERO, .filters = STRALLOC_ZERO }
+#define WPACTRL_ZERO { .fds = -1, .fda = -1, .options = 0, .datahead = 0, .data = STRALLOC_ZERO, .filters = STRALLOC_ZERO }
 
 #define WPACTRL_OPTION_NOFILTER 0x0001U
 
@@ -63,9 +66,25 @@ extern void wpactrl_filter_remove (wpactrl_t *, char const *) ;
 #define wpactrl_filter_deactivate(a) ((a)->options |= WPACTRL_OPTION_NOFILTER)
 
 extern int wpactrl_update (wpactrl_t *) ;
-#define wpactrl_data(a) ((a)->data.s)
-#define wpactrl_datalen(a) ((a)->data.len))
-#define wpactrl_ackdata(a) ((a)->data.len = 0)
+extern char *wpactrl_msg (wpactrl_t *) gccattr_pure ;
+extern void wpactrl_ackmsg (wpactrl_t *) ;
+
+
+ /* High-level functions */
+
+typedef struct wpactrl_scanres_s wpactrl_scanres_t, *wpactrl_scanres_t_ref ;
+struct wpactrl_scanres_s
+{
+  char bssid[6] ;
+  uint16_t frequency ;
+  uint16_t signal_level ;
+  uint32_t flags ;
+  size_t ssid ;
+} ;
+#define WPACTRL_SCANRES_ZERO { .bssid = "\0\0\0\0\0", .frequency = 0, .signal_level = 0, .flags = 0, .ssid = 0 }
+
+extern int wpactrl_scan_parse (char const *, size_t, genalloc * /* wpactrl_scanres_t */, stralloc *) ;
+
 
 
  /*

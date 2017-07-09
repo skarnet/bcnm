@@ -8,10 +8,13 @@ src/libwpactrl/wpactrl_end.o src/libwpactrl/wpactrl_end.lo: src/libwpactrl/wpact
 src/libwpactrl/wpactrl_fd_recv.o src/libwpactrl/wpactrl_fd_recv.lo: src/libwpactrl/wpactrl_fd_recv.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
 src/libwpactrl/wpactrl_fd_timed_recv.o src/libwpactrl/wpactrl_fd_timed_recv.lo: src/libwpactrl/wpactrl_fd_timed_recv.c src/libwpactrl/wpactrl-internal.h
 src/libwpactrl/wpactrl_filter_add.o src/libwpactrl/wpactrl_filter_add.lo: src/libwpactrl/wpactrl_filter_add.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
-src/libwpactrl/wpactrl_filter_exact_search.o src/libwpactrl/wpactrl_filter_exact_search.lo: src/libwpactrl/wpactrl_filter_exact_search.c
+src/libwpactrl/wpactrl_filter_exact_search.o src/libwpactrl/wpactrl_filter_exact_search.lo: src/libwpactrl/wpactrl_filter_exact_search.c src/libwpactrl/wpactrl-internal.h
 src/libwpactrl/wpactrl_filter_remove.o src/libwpactrl/wpactrl_filter_remove.lo: src/libwpactrl/wpactrl_filter_remove.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
+src/libwpactrl/wpactrl_msg.o src/libwpactrl/wpactrl_msg.lo: src/libwpactrl/wpactrl_msg.c src/include/bcnm/wpactrl.h
+src/libwpactrl/wpactrl_nextmsg.o src/libwpactrl/wpactrl_nextmsg.lo: src/libwpactrl/wpactrl_nextmsg.c src/include/bcnm/wpactrl.h
 src/libwpactrl/wpactrl_query.o src/libwpactrl/wpactrl_query.lo: src/libwpactrl/wpactrl_query.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
 src/libwpactrl/wpactrl_querysa.o src/libwpactrl/wpactrl_querysa.lo: src/libwpactrl/wpactrl_querysa.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
+src/libwpactrl/wpactrl_scan_parse.o src/libwpactrl/wpactrl_scan_parse.lo: src/libwpactrl/wpactrl_scan_parse.c src/include/bcnm/wpactrl.h
 src/libwpactrl/wpactrl_start.o src/libwpactrl/wpactrl_start.lo: src/libwpactrl/wpactrl_start.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
 src/libwpactrl/wpactrl_update.o src/libwpactrl/wpactrl_update.lo: src/libwpactrl/wpactrl_update.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
 src/libwpactrl/wpactrl_zero.o src/libwpactrl/wpactrl_zero.lo: src/libwpactrl/wpactrl_zero.c src/include/bcnm/wpactrl.h
