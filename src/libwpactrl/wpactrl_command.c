@@ -6,36 +6,42 @@
 
 #define WPARESPONSE_MAXLEN 28
 
-wparesponse_t wpactrl_command (wpactrl_t *a, char const *s, size_t len, tain_t const *deadline, tain_t *stamp)
+struct wparesponse_map_s
 {
-  static char const *wparesponses[] =
+  char const *s ;
+  wparesponse_t r ;
+} ;
+
+wparesponse_t wpactrl_command (wpactrl_t *a, char const *s, size_t len, tain_t *stamp)
+{
+  static struct wparesponse_map_s const wparesponses[] =
   {
-    "OK\n",
-    "PONG\n",
-    "UNKNOWN COMMAND\n",
-    "FAIL\n",
-    "FAIL-BUSY\n",
-    "FAIL-CHECKSUM\n",
-    "FAIL-INVALID-PIN\n",
-    "FAIL-CHANNEL-UNAVAILABLE\n",
-    "FAIL-CHANNEL-UNSUPPORTED\n",
-    "FAIL-Invalid range\n",
-    "FAIL-Too long response\n",
-    "FAIL-PBC-OVERLAP\n",
-    "FAIL-UNKNOWN-UUID\n",
-    "FAIL-NO-AP-SETTINGS\n",
-    "FAIL-NO-IFNAME-MATCH\n",
-    0
+    {  "OK\n", WPA_OK },
+    { "PONG\n", WPA_PONG },
+    { "UNKNOWN COMMAND\n", WPA_UNKNOWNCOMMAND },
+    { "FAIL\n", WPA_FAIL },
+    { "FAIL-BUSY\n", WPA_FAILBUSY },
+    { "FAIL-CHECKSUM\n", WPA_FAILCHECKSUM },
+    { "FAIL-INVALID-PIN\n", WPA_FAILINVALIDPIN },
+    { "FAIL-CHANNEL-UNAVAILABLE\n", WPA_FAILCHANNELUNAVAILABLE },
+    { "FAIL-CHANNEL-UNSUPPORTED\n", WPA_FAILCHANNELUNSUPPORTED },
+    { "FAIL-Invalid range\n", WPA_FAILINVALIDRANGE },
+    { "FAIL-Too long response\n", WPA_FAILTOOLONGRESPONSE },
+    { "FAIL-PBC-OVERLAP\n", WPA_FAILPBCOVERLAP },
+    { "FAIL-UNKNOWN-UUID\n", WPA_FAILUNKNOWNUUID },
+    { "FAIL-NO-AP-SETTINGS\n", WPA_FAILNOAPSETTINGS },
+    { "FAIL-NO-IFNAME-MATCH\n", WPA_FAILNOIFNAMEMATCH },
+    { 0, WPA_UNKNOWNRESPONSE }
   } ;
   char buf[WPARESPONSE_MAXLEN] ;
-  ssize_t r = wpactrl_query(a, s, len, buf, WPARESPONSE_MAXLEN, deadline, stamp) ;
+  ssize_t r = wpactrl_query(a, s, len, buf, WPARESPONSE_MAXLEN, stamp) ;
   if (r < 0) return WPA_ERROR ;
   if (!r) return (errno = EPIPE, WPA_ERROR) ;
   {
-    wparesponse_t i = 0 ;
-    for (; wparesponses[i] ; i++)
-      if (!strncmp(buf, wparesponses[i], r))
+    unsigned int i = 0 ;
+    for (; wparesponses[i].s ; i++)
+      if (!strncmp(buf, wparesponses[i].s, r))
         break ;
-    return i ;
+    return wparesponses[i].r ;
   }
 }

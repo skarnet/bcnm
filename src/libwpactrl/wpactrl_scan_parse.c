@@ -17,35 +17,60 @@ static size_t bssid_scan (char const *s, char *bssid)
   char sep[6] = ":::::\t" ;
   for (; i < 6 ; i++)
   {
-    if (!ucharn_scan(s, bssid + i, 1)) return 0 ;
-    if (s[2] != sep[i]) return 0 ;
+    if (!ucharn_scan(s, bssid + i, 1)) goto eproto ;
+    if (s[2] != sep[i]) goto eproto ;
     s += 3 ;
   }
   return 18 ;
+
+ eproto:
+  return (errno = EPROTO, 0) ;
 }
 
-static size_t flags_scan (char const *s, uint32_t *flags)
+static int flags_scan (char const *s, size_t len, stralloc *sa)
 {
-  return 0 ;
+  while (len)
+  {
+    size_t pos ;
+    if (*s++ != '[') goto eproto ;
+    len-- ;
+    pos = byte_chr(s, len, ']') ;
+    if (pos >= len || !pos) goto eproto ;
+    if (!stralloc_catb(sa, s, pos) || !stralloc_0(sa)) return 0 ;
+    s += pos + 1 ; len -= pos + 1 ;
+  }
+  return 1 ;
+
+ eproto:
+  return (errno = EPROTO, 0) ;
 }
 
 static int wpactrl_scan_parse_one (char const *s, size_t len, wpactrl_scanres_t *thing, stralloc *sa)
 {
+  wpactrl_scanres_t sr ;
   size_t pos = byte_chr(s, len, '\t') ;
-  if (pos >= len) return 0 ;
-  if (pos != 18) return 0 ;
-  if (bssid_scan(s, thing->bssid) != pos) return 0 ;
+  if (pos >= len) goto eproto ;
+  if (pos != 18) goto eproto ;
+  if (bssid_scan(s, sr.bssid) != pos) goto eproto ;
   s += pos + 1 ; len -= pos + 1 ;
   pos = byte_chr(s, len, '\t') ;
-  if (pos >= len) return 0 ;
-  if (uint16_scan(s, &thing->frequency) != pos) return 0 ;
+  if (pos >= len) goto eproto ;
+  if (uint16_scan(s, &sr.frequency) != pos) goto eproto ;
   s += pos + 1 ; len -= pos + 1 ;
   pos = byte_chr(s, len, '\t') ;
-  if (pos >= len) return 0 ;
-  if (flags_scan(s, &thing->flags) != pos) return 0 ;
+  if (pos >= len) goto eproto ;
+  sr.flags_start = sa->len ;
+  if (!flags_scan(s, pos, sa)) goto eproto ;
   s += pos + 1 ; len -= pos + 1 ;
-  thing->ssid = sa->len ;
-  return stralloc_catb(sa, s, len - 1) && stralloc_0(sa) ;
+  sr.flags_len = sa->len - sr.flags_start ;
+  sr.ssid_start = sa->len ;
+  sr.ssid_len = len - 1 ;
+  if (!stralloc_catb(sa, s, len - 1) || !stralloc_0(sa)) return 0 ;
+  *thing = sr ;
+  return 1 ;
+
+ eproto:
+  return (errno = EPROTO, 0) ;
 }
 
 int wpactrl_scan_parse (char const *s, size_t len, genalloc *ga, stralloc *sa)
