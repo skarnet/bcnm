@@ -1,4 +1,7 @@
 wpactrl_ackmsg.o
+wpactrl_addnetwork.o
+wpactrl_associate.o
+wpactrl_bssid_scan.o
 wpactrl_command.o
 wpactrl_end.o
 wpactrl_env_parse.o
@@ -8,10 +11,16 @@ wpactrl_filter_add.o
 wpactrl_filter_exact_search.o
 wpactrl_filter_match.o
 wpactrl_filter_remove.o
+wpactrl_findnetwork.o
+wpactrl_flags_scan.o
 wpactrl_msg.o
+wpactrl_networks_parse.o
 wpactrl_query.o
 wpactrl_querysa.o
+wpactrl_removenetwork.o
 wpactrl_scan_parse.o
+wpactrl_selectnetwork.o
+wpactrl_setnetworkoption.o
 wpactrl_start.o
 wpactrl_update.o
 wpactrl_xchg_computedeadline.o

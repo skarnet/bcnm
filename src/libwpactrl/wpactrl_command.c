@@ -1,6 +1,5 @@
 /* ISC license. */
 
-#include <string.h>
 #include <errno.h>
 #include <bcnm/wpactrl.h>
 
@@ -12,7 +11,7 @@ struct wparesponse_map_s
   wparesponse_t r ;
 } ;
 
-wparesponse_t wpactrl_command (wpactrl_t *a, char const *s, size_t len, tain_t *stamp)
+wparesponse_t wpactrl_command (wpactrl_t *a, char const *s, tain_t *stamp)
 {
   static struct wparesponse_map_s const wparesponses[] =
   {
@@ -34,7 +33,7 @@ wparesponse_t wpactrl_command (wpactrl_t *a, char const *s, size_t len, tain_t *
     { 0, WPA_UNKNOWNRESPONSE }
   } ;
   char buf[WPARESPONSE_MAXLEN] ;
-  ssize_t r = wpactrl_query(a, s, len, buf, WPARESPONSE_MAXLEN, stamp) ;
+  ssize_t r = wpactrl_query(a, s, buf, WPARESPONSE_MAXLEN, stamp) ;
   if (r < 0) return WPA_ERROR ;
   if (!r) return (errno = EPIPE, WPA_ERROR) ;
   {

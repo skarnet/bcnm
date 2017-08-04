@@ -80,17 +80,15 @@ event loop.
 <h3> Synchronous functions </h3>
 
 <p>
- The bulk of <tt>libwpactrl</tt> functions take two extra arguments at the end, named
-<em>deadline</em> and <em>stamp</em>, of type
+ The bulk of <tt>libwpactrl</tt> functions takes an extra <em>stamp</em> argument
+at the end, of type
 <a href="//skarnet.org/software/skalibs/libstddjb/tai.html">tain_t</a>. This means
-they are synchronous function calls, and the extra arguments are there to ensure
+they are synchronous function calls, and the extra argument is there to ensure
 those calls do not block forever.
 </p>
 
 <p>
-<em>deadline</em> is an absolute date: if the function has not returned when this
-date is reached, it will immediately return with a code meaning "failure" and
-<tt>errno</tt> set to ETIMEDOUT. <em>stamp</em> must be first initialized to an
+<em>stamp</em> must be first initialized to an
 accurate enough approximation of the current time, for instance via skalibs'
 <tt>tain_now()</tt> function; it will then be automatically updated by the
 libwpactrl function calls to always contain (an accurate enough approximation
@@ -100,9 +98,9 @@ of) the current time.
 <p>
  <a href="//skarnet.org/software/skalibs/">skalibs</a> can keep track of the
 timestamp for you, in the global <tt>STAMP</tt> variable. All <tt>libwpactrl</tt>
-functions taking <em>deadline</em> and <em>stamp</em> arguments also have a
-version with a name ending in <tt>_g</tt>, that only takes a <tt>deadline</tt>
-argument, and assumes the <tt>STAMP</tt> variable always contains (an accurate
+functions taking a <em>stamp</em> argument also have a
+version with a name ending in <tt>_g</tt>, that does not take it and instead
+assumes the <tt>STAMP</tt> variable always contains (an accurate
 enough approximation of) the current time.
 <p>
 
@@ -110,20 +108,26 @@ enough approximation of) the current time.
  Those synchronous function calls normally return almost instantly: there should
 be no blocking code path between the function call and its return. Nevertheless,
 since they involve communication with a complex <tt>wpa_supplicant</tt> process,
-it's impossible to guarantee that they will never block, so the deadline pattern
-is there to set a cap on the amount of time they block. A deadline set a few
-seconds into the future should be enough.
+it's impossible to guarantee that they will never block, so the use of the
+<em>stamp</em> argument, plus a timeout given at <tt>wpactrl_start</tt> time,
+ensures there is a cap on the amount of time they block.
 </p>
 
 
 <h3> Starting and stopping a session </h3>
 
 <p>
-<code> int wpactrl_start (wpactrl_t *a, char const *path, tain_t const *deadline, tain_t *stamp) </code> <br />
+<code> int wpactrl_start (wpactrl_t *a, char const *path, unsigned int timeout, tain_t *stamp) </code> <br />
 Starts a session with a <tt>wpa_supplicant</tt> instance listening on a Unix socket
-at <em>path</em>.
+at <em>path</em>. <em>a</em> is a handle that must be initialized to
+WPACTRL_ZERO before the call to <tt>wpactrl_start</tt>, and that must then
+be passed to every <tt>wpactrl_*</tt> call in the session.
 The function returns 1 if it succeeds, or 0 (and sets errno) if
-it fails.
+it fails. The <em>timeout</em> argument is interpreted as milliseconds:
+it sets the number of milliseconds for which every subsequent synchronous call
+to wpa_supplicant in the current session will be willing to wait. If a call
+to wpa_supplicant takes longer than <em>timeout</em> milliseconds, the call
+will immediately be aborted.
 </p>
 
 <p>
@@ -134,8 +138,8 @@ Ends the session, freeing all used resources.
 <h3> Low-level command sending </h3>
 
 <p>
-<code> ssize_t wpactrl_query (wpactrl_t *a, char const *q, size_t qlen, char *ans, size_t anslen, tain_t const *deadline, tain_t *stamp) </code> <br />
-Sends the query <em>q</em> of size <em>qlen</em> to the connected instance
+<code> ssize_t wpactrl_query (wpactrl_t *a, char const *q, char *ans, size_t anslen, tain_t *stamp) </code> <br />
+Sends the query <em>q</em> to the connected instance
 of wpa_supplicant, and reads its answer into the buffer pointed to by
 <em>ans</em>. Returns -1 in case of failure, or the number of bytes of
 the answer in case of success. Returns -1 with errno set to EMSGSIZE if
@@ -143,25 +147,26 @@ the answer is bigger than <em>anslen</em> bytes.
 </p>
 
 <p>
-<code> ssize_t wpactrl_querysa (wpactrl_t *a, char const *q, size_t qlen, stralloc *sa, tain_t const *deadline, tain_t *stamp) </code> <br />
-Sends the query <em>q</em> of size <em>qlen</em> to the connected instance
+<code> ssize_t wpactrl_querysa (wpactrl_t *a, char const *q, stralloc *sa, tain_t *stamp) </code> <br />
+Sends the query <em>q</em> to the connected instance
 of wpa_supplicant, and reads its answer into the
 <a href="//skarnet.org/software/skalibs/libstddjb/stralloc.html">stralloc</a>
 pointed to by <em>sa</em>. Returns 1 if it succeeds and 0 if it fails.
 </p>
 
 <p>
-<code> wparesponse_t wpactrl_command (wpactrl_t *a, char const *q, size_t qlen, tain_t const *deadline, tain_t *stamp) </code> <br />
-Sends the command <em>q</em> of size <em>qlen</em> to the connected instance
+<code> wparesponse_t wpactrl_command (wpactrl_t *a, char const *q, tain_t *stamp) </code> <br />
+Sends the command <em>q</em> to the connected instance
 of wpa_supplicant, and returns its answer under the form of a
 <tt>wparesponse_t</tt>, which is an enumeration defined in the
 <tt>bcnm/wpactrl.h</tt> header. This function is meant to be used
 with commands returning a well-known value, such as <tt>RECONFIGURE</tt>
 (returning <tt>OK</tt> or <tt>FAIL</tt>) or <tt>PING</tt>
-(returning <tt>PONG</tt>).
+(returning <tt>PONG</tt>). The <tt>wparesponse_t</tt> enumeration
+type lists all the possible values for the function's return code.
 </p>
 
-<h3> Reading from the attached connection </h3>
+<h3> Reading from the attached (asynchronous) connection </h3>
 
 <p>
 <code> int wpactrl_update (wpactrl_t *a) </code> <br />
@@ -183,7 +188,7 @@ returns NULL.
 </p>
 
 <p>
-<code> void wpactrl_nextmsg (wpactrl_t *a) </code> <br />
+<code> void wpactrl_ackmsg (wpactrl_t *a) </code> <br />
 Acknowledges reading of one unsolicited message from wpa_supplicant.
 The next invocation of <tt>wpactrl_msg()</tt> will point to the next
 one.
@@ -207,7 +212,7 @@ Removes <em>prefix</em> from the whitelist.
 </p>
 
 <p>
-<code> void wpactrl_filter_activate (wpactrl_t *a) </code>
+<code> void wpactrl_filter_activate (wpactrl_t *a) </code> <br />
 Activates the message filter. Unsolicited messages from
 wpa_supplicant will be discarded unless they are explicitly
 whitelisted by a call to <tt>wpactrl_filter_add()</tt>. This
@@ -215,13 +220,130 @@ is the default.
 </p>
 
 <p>
-<code> void wpactrl_filter_deactivate (wpactrl_t *a) </code>
+<code> void wpactrl_filter_deactivate (wpactrl_t *a) </code> <br />
 Dectivates the message filter. All the unsolicited messages from
 wpa_supplicant will be stored and made available to the
 application.
 </p>
 
-<h3> Higher-level commands </h3>
+<p>
+<code> int wpactrl_filter_match (wpactrl_t const *a, char const *s, size_t len) </code> <br />
+Returns 1 if the string <em>s</em> of size <em>len</em> matches one of the
+registered filters, and 0 otherwise.
+</p>
+
+
+<h3> Helper functions for parsing answers from wpa_supplicant </h3>
+
+<p>
+<code> size_t wpactrl_bssid_scan (char const *s, char *bssid) </code> <br />
+Parses a BSSID of the form <em>a:b:c:d:e:f</em> in string <em>s</em>
+and writes it as an array of 6 bytes pointed to by <em>bssid</em>.
+The string "any" is specifically recognized and yields a <em>bssid</em>
+of 6 zero bytes. The function returns the number of characters eaten
+in <em>s</em>, or 0 if it fails to recognize a BSSID.
+</p>
+
+<p>
+<code> size_t wpactrl_flags_scan (char const *s, stralloc *sa) </code> <br />
+Parses a wpa_supplicant "flags" field in the string <em>s</em>
+and appends them to the
+<a href="//skarnet.org/software/skalibs/libstddjb/stralloc.html">stralloc</a>
+pointed to by <em>sa</em>. The flags are written without their
+surrounding square brackets, and every flag is terminated by a null
+byte.
+</p>
+
+<p>
+<code> unsigned int wpactrl_env_parse (char *s, size_t len) </code> <br />
+Replaces newlines with null bytes in the string <em>s</em> of length <em>len</em>.
+Returns the number of replaced newlines.
+</p>
+
+<p>
+<code> int wpactrl_scan_parse (char const *s, size_t len, genalloc *ga, stralloc *storage) </code> <br />
+Parses the string <em>s</em> of length <em>len</em>, expecting it to be
+wpa_supplicant's response to a SCAN_RESULTS command. The result is a series of
+<tt>wpactrl_scanres_t</tt> structures, appended to the
+<a href="//skarnet.org/software/skalibs/libstddjb/genalloc.html">genalloc</a>
+pointed to by <em>ga</em>, and variable length data is appended to the
+<a href="//skarnet.org/software/skalibs/libstddjb/stralloc.html">stralloc</a>
+pointed to by <em>storage</em>.
+ The <tt>ssid_start</tt> and <tt>flags_start</tt> fields of a
+<tt>wpactrl_scanres_t</tt> are indices pointing into the <em>storage&rarr;s</em>
+string.
+</p>
+
+<p>
+<code> int wpactrl_networks_parse (char const *s, size_t len, genalloc *ga, stralloc *storage) </code> <br />
+Parses the string <em>s</em> of length <em>len</em>, expecting it to be
+wpa_supplicant's response to a LIST_NETWORKS command. The result is a series of
+<tt>wpactrl_networks_t</tt> structures, appended to the
+<a href="//skarnet.org/software/skalibs/libstddjb/genalloc.html">genalloc</a>
+pointed to by <em>ga</em>, and variable length data is appended to the
+<a href="//skarnet.org/software/skalibs/libstddjb/stralloc.html">stralloc</a>
+pointed to by <em>storage</em>.
+ The <tt>ssid_start</tt> and <tt>flags_start</tt> fields of a
+<tt>wpactrl_networks_t</tt> are indices pointing into the <em>storage&rarr;s</em>
+string.
+</p>
+
+<h3> High-level functions for common calls to wpa_supplicant </h3>
+
+<p>
+</code> int wpactrl_addnetwork (wpactrl_t *a, uint32_t *id, tain_t *stamp) </code> </br>
+Tells wpa_supplicant to create a new network. If it fails, returns 0. If it
+succeeds, stores the new network id in <em>*id</em> and returns 1.
+</p>
+
+<p>
+</code> wparesponse_t wpactrl_removenetwork (wpactrl_t *a, uint32_t id, tain_t *stamp) </code> </br>
+Tells wpa_supplicant to remove the network with id <em>id</em>. Returns the
+response code of wpa_supplicant: WPA_OK on success, WPA_FAIL or something
+else on failure.
+</p>
+
+<p>
+</code> int wpactrl_findnetwork (wpactrl_t *a, char const *ssid, uint32_t *id, tain_t *stamp) </code> </br>
+Finds the network id (as seen by wpa_supplicant) of the network with ssid <em>ssid</em>.
+Stores it into <em>*id</em> if found, and returns 1. Returns 0 if not found;
+returns -1 (and sets errno) if an error occurs.
+</p>
+
+<p>
+</code> wparesponse_t wpactrl_setnetworkoption (wpactrl_t *a, uint32_t id, char const *var, char const *val, tain_t *stamp) </code> </br>
+Sets parameter <em>var</em> to value <em>val</em> for network <em>id</em>.
+Returns the response code of wpa_supplicant, most likely WPA_OK or WPA_FAIL.
+</p>
+
+<p>
+</code> wparesponse_t wpactrl_selectnetwork (wpactrl_t *a, uint32_t id, tain_t *stamp) </code> </br>
+Selects network <em>id</em> to associate with.
+Returns the response code of wpa_supplicant, most likely WPA_OK or WPA_FAIL.
+</p>
+
+<p>
+</code> int wpactrl_associate (wpactrl_t *, char const *ssid, char const *psk, tain_t *stamp) </code> </br>
+Tells wpa_supplicant to associate with the wifi network having the ssid <em>ssid</em>,
+creating it if it's not already known by wpa_supplicant. If <em>psk</em> is NULL,
+the network will be assumed open and authentication will use a NONE protocol.
+If <em>psk</em> is not NULL, the network authentication will be assumed using
+WPA-PSK or WPA2-PSK, and <em>psk</em> will be sent as pre-shared key.
+The function returns 1 on success, or 0 if something went wrong.
+</p>
+
+<h3> Medium-level functions to use with an asynchronous event loop </h3>
+
+<p>
+ The following functions can be used when performing calls to wpa_supplicant
+such as <tt>SCAN</tt> that answer with an asynchronous message on the "attached"
+interface.
+</p>
+
+<p>
+</code> int wpactrl_xchg_init (wpactrl_xchg_t *dt, wpactrl_xchgitem_t const *tab, unsigned int n, tain_t const *limit, void *aux) </code> </br>
+Initializes.
+</p>
 
 </body>
 </html>

@@ -4,7 +4,7 @@
 #include <skalibs/stralloc.h>
 #include <bcnm/wpactrl.h>
 
-int wpactrl_xchg_init (wpactrl_xchg_t *dt, wpactrl_xchgitem_t const *tab, unsigned int n, tain_t const *limit, void *aux)
+void wpactrl_xchg_init (wpactrl_xchg_t *dt, wpactrl_xchgitem_t const *tab, unsigned int n, tain_t const *limit, void *aux)
 {
   dt->sa.len = 0 ;
   dt->tab = tab ;
@@ -13,5 +13,4 @@ int wpactrl_xchg_init (wpactrl_xchg_t *dt, wpactrl_xchgitem_t const *tab, unsign
   dt->deadline = *limit ;
   dt->status = ECONNABORTED ;
   dt->aux = aux ;
-  return 1 ;
 }
