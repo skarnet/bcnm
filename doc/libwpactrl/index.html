@@ -147,7 +147,7 @@ the answer is bigger than <em>anslen</em> bytes.
 </p>
 
 <p>
-<code> ssize_t wpactrl_querysa (wpactrl_t *a, char const *q, stralloc *sa, tain_t *stamp) </code> <br />
+<code> int wpactrl_querysa (wpactrl_t *a, char const *q, stralloc *sa, tain_t *stamp) </code> <br />
 Sends the query <em>q</em> to the connected instance
 of wpa_supplicant, and reads its answer into the
 <a href="//skarnet.org/software/skalibs/libstddjb/stralloc.html">stralloc</a>
@@ -471,6 +471,18 @@ written the results to the auxiliary pointer. <em>dt</em> can now be ignored. </
 <tt>wpactrl_xchg_event()</tt>. It's still a success, but likely signals a programming
 error. </li>
 </ul>
+
+<h2> A working example </h2>
+
+<p>
+ The provided
+ <a href="bcnm-wpactrl-scan.c.txt">bcnm-wpactrl-scan.c</a>
+file is an example on how to program with
+<a href="//skarnet.org/software/skalibs/">skalibs</a> and libwpactrl. It connects to
+a wpa_supplicant instance (it takes the path to the Unix socket to wpa_supplicant as
+an argument), requests a scan, waits for the scan results with a timeout of 10
+seconds, and prints the results as is on its standard output.
+</p>
 
 </body>
 </html>

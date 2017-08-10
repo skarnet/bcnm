@@ -1,0 +1,87 @@
+/* ISC license. */
+
+#include <sys/types.h>
+#include <skalibs/stddjb.h>
+#include <bcnm/wpactrl.h>
+
+#define USAGE "bcnm-wpactrl-scan socket-to-wpa_supplicant"
+#define dieusage() strerr_dieusage(100, USAGE)
+
+static int print_scan_results (wpactrl_t *a, char const *s, size_t len, void *aux, tain_t *stamp)
+{
+  stralloc sa = STRALLOC_ZERO ;
+  ssize_t r ;
+  if (!wpactrl_querysa(a, "SCAN_RESULTS", &sa, stamp)) return 0 ;
+  r = buffer_put(buffer_1, sa.s, sa.len) ;
+  stralloc_free(&sa) ;
+  (void)s ;
+  (void)len ;
+  (void)aux ;
+  return r >= 0 ;
+}
+
+static wpactrl_xchgitem_t exchange_item =
+{
+  .filter = "CTRL-EVENT-SCAN-RESULTS",
+  .cb = &print_scan_results
+} ;
+
+
+int main (int argc, char const *const *argv)
+{
+  wpactrl_t a = WPACTRL_ZERO ;
+  wpactrl_xchg_t dt ;
+  tain_t deadline ;
+  wparesponse_t r ;
+
+  PROG = "bcnm-wpactrl-scan" ;
+  if (argc < 2) dieusage() ;
+
+  tain_now_g() ;
+
+  if (!wpactrl_start_g(&a, argv[1], 2000))
+    strerr_diefu2sys(111, "connect to ", argv[1]) ;
+
+  r = wpactrl_command_g(&a, "SCAN") ;
+  if (r != WPA_OK && r != WPA_FAILBUSY)
+    strerr_dief1x(111, "SCAN command failed") ;
+
+  tain_from_millisecs(&deadline, 10000) ;
+  tain_add_g(&deadline, &deadline) ;
+  wpactrl_xchg_init(&dt, &exchange_item, 1, &deadline, 0) ;
+  if (!wpactrl_xchg_start(&a, &dt))
+    strerr_diefu1sys(111, "start wpactrl exchange") ;
+
+  {
+    iopause_fd x = { .fd = wpactrl_fd(&a), .events = IOPAUSE_READ } ;
+    for (;;)
+    {
+      int r ;
+      tain_add_g(&deadline, &tain_infinite_relative) ;
+      wpactrl_xchg_computedeadline(&dt, &deadline) ;
+      r = iopause_g(&x, 1, &deadline) ;
+      if (r < 0)
+        strerr_diefu1sys(111, "iopause") ;
+
+      if (!r)
+      {
+        if (wpactrl_xchg_timeout_g(&a, &dt))
+          strerr_dief1x(111, "scan exchange timed out") ;
+        else
+          strerr_diefu1x(111, "timeout unrelated to the scan exchange") ;
+      }
+
+      if (wpactrl_update(&a) < 0)
+        strerr_diefu1sys(111, "wpactrl_update") ;
+      r = wpactrl_xchg_event_g(&a, &dt) ;
+      if (r < 0)
+        strerr_diefu1sys(111, r < -1 ? "print_scan_results" : "wpactrl_xchg_event") ;
+      if (r) break ;
+    }
+  }
+
+  wpactrl_end(&a) ;
+  if (!buffer_flush(buffer_1))
+    strerr_diefu1sys(111, "write to stdout") ;
+  return 0 ;  
+}
