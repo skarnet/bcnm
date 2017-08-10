@@ -445,7 +445,7 @@ point to the current time.
 <p>
 <code> int wpactrl_xchg_event (wpactrl_t *a, wpactrl_xchg_t *dt, tain_t *stamp) </code> <br />
 To be called after an <tt>iopause</tt> invocation that returned a positive number, and
-after a <tt>wpactrl_update(<em>a</em>) invocation.
+after a <tt>wpactrl_update(<em>a</em>)</tt> invocation.
 Advances the exchange described in <em>*dt</em>, if applicable: if a message arrived
 that matches the current filter set up by <em>*dt</em>, executes the corresponding
 callback, then sets up the next filter. <em>stamp</em> must point to the current
