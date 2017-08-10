@@ -288,42 +288,47 @@ pointed to by <em>storage</em>.
 string.
 </p>
 
-<h3> High-level functions for common calls to wpa_supplicant </h3>
+<p>
+<code> void wpactrl_xchg_cbres_free (wpactrl_xchg_cbres_t *res) </code> <br />
+Frees the heap memory used by the object pointed to by <em>res</em>.
+</p>
+
+<h3> User functions for common calls to wpa_supplicant </h3>
 
 <p>
-</code> int wpactrl_addnetwork (wpactrl_t *a, uint32_t *id, tain_t *stamp) </code> </br>
+<code> int wpactrl_addnetwork (wpactrl_t *a, uint32_t *id, tain_t *stamp) </code> </br>
 Tells wpa_supplicant to create a new network. If it fails, returns 0. If it
 succeeds, stores the new network id in <em>*id</em> and returns 1.
 </p>
 
 <p>
-</code> wparesponse_t wpactrl_removenetwork (wpactrl_t *a, uint32_t id, tain_t *stamp) </code> </br>
+<code> wparesponse_t wpactrl_removenetwork (wpactrl_t *a, uint32_t id, tain_t *stamp) </code> </br>
 Tells wpa_supplicant to remove the network with id <em>id</em>. Returns the
 response code of wpa_supplicant: WPA_OK on success, WPA_FAIL or something
 else on failure.
 </p>
 
 <p>
-</code> int wpactrl_findnetwork (wpactrl_t *a, char const *ssid, uint32_t *id, tain_t *stamp) </code> </br>
+<code> int wpactrl_findnetwork (wpactrl_t *a, char const *ssid, uint32_t *id, tain_t *stamp) </code> </br>
 Finds the network id (as seen by wpa_supplicant) of the network with ssid <em>ssid</em>.
 Stores it into <em>*id</em> if found, and returns 1. Returns 0 if not found;
 returns -1 (and sets errno) if an error occurs.
 </p>
 
 <p>
-</code> wparesponse_t wpactrl_setnetworkoption (wpactrl_t *a, uint32_t id, char const *var, char const *val, tain_t *stamp) </code> </br>
+<code> wparesponse_t wpactrl_setnetworkoption (wpactrl_t *a, uint32_t id, char const *var, char const *val, tain_t *stamp) </code> </br>
 Sets parameter <em>var</em> to value <em>val</em> for network <em>id</em>.
 Returns the response code of wpa_supplicant, most likely WPA_OK or WPA_FAIL.
 </p>
 
 <p>
-</code> wparesponse_t wpactrl_selectnetwork (wpactrl_t *a, uint32_t id, tain_t *stamp) </code> </br>
+<code> wparesponse_t wpactrl_selectnetwork (wpactrl_t *a, uint32_t id, tain_t *stamp) </code> </br>
 Selects network <em>id</em> to associate with.
 Returns the response code of wpa_supplicant, most likely WPA_OK or WPA_FAIL.
 </p>
 
 <p>
-</code> int wpactrl_associate (wpactrl_t *, char const *ssid, char const *psk, tain_t *stamp) </code> </br>
+<code> int wpactrl_associate (wpactrl_t *, char const *ssid, char const *psk, tain_t *stamp) </code> </br>
 Tells wpa_supplicant to associate with the wifi network having the ssid <em>ssid</em>,
 creating it if it's not already known by wpa_supplicant. If <em>psk</em> is NULL,
 the network will be assumed open and authentication will use a NONE protocol.
@@ -332,18 +337,140 @@ WPA-PSK or WPA2-PSK, and <em>psk</em> will be sent as pre-shared key.
 The function returns 1 on success, or 0 if something went wrong.
 </p>
 
-<h3> Medium-level functions to use with an asynchronous event loop </h3>
+<p>
+<code> int wpactrl_startscan (wpactrl_t *a, wpactrl_xchgitem_t *item, wpactrl_xchg_cbres_t *res, tain_t const *limit, tain_t *stamp) </code> </br>
+Asks wpa_supplicant to start a scan. Sets up the <tt>wpactrl_xchgitem_t</tt>
+structure pointed to by <em>item</em> so it can be used in an asynchronous
+event loop to check for availability of the scan results (see below).
+<em>limit</em> is an absolute deadline after which the scan should be
+considered failed: if the current time goes over <em>limit</em>, then
+<tt>wpactrl_xchg_timeout()</tt> will report a timeout on <em>item</em>.
+But if <tt>wpactrl_xchg_event()</tt> reports that an event occurs on
+<em>item</em>, instead, the results will be available in the
+<tt>wpactrl_xchg_cbres_t</tt> structure pointed to by <em>res</em>:
+<em>res&arr;parsed</em> will be a
+<a href="//skarnet.org/software/skalibs/libstddjb/genalloc.html">genalloc</a>
+made of <tt>wpactrl_scanres_t</tt> objects, constructed by the
+<tt>wpactrl_scan_parse()</tt> function, and <em>res&arr;storage</em> will
+be the associated storage.
+<tt>wpactrl_startscan()</tt> returns 0 (and sets errno) if an error
+occurs, and 1 if the scan is properly started.
+</p>
+
+<h3> Functions to use within an asynchronous event loop </h3>
 
 <p>
- The following functions can be used when performing calls to wpa_supplicant
-such as <tt>SCAN</tt> that answer with an asynchronous message on the "attached"
-interface.
+<code> int wpactrl_xchg_init (wpactrl_xchg_t *dt, wpactrl_xchgitem_t const *tab, unsigned int tablen, tain_t const *limit, void *aux) </code> </br>
+Initializes the <tt>wpactrl_xchg_t</tt> structure pointed to by <em>dt</em>.
+Returns 0 on failure and 1 on success.
 </p>
 
 <p>
-</code> int wpactrl_xchg_init (wpactrl_xchg_t *dt, wpactrl_xchgitem_t const *tab, unsigned int n, tain_t const *limit, void *aux) </code> </br>
-Initializes.
+A <tt>wpactrl_xchg_t</tt> contains the state for an asynchronous call to
+wpa_supplicant (i.e. a command has been sent and we're now waiting on
+reception of an event on the attached interface). It is initialized with
+the <em>tab</em>, <em>n</em> and <em>aux</em> values.
 </p>
+
+<p>
+<em>aux</em> is a user-provided pointer used to pass external data
+to the function callbacks defined in <em>tab</em>.
+</p>
+
+<p>
+<em>tab</em> points to <em>tablen</em> caller-provided objects of type <tt>wpactrl_xchgitem_t</tt>.
+This type is a struct containing the following members:
+</p>
+
+<ul>
+ <li> <tt>char const *filter</tt>&nbsp;: a string to watch for in unsolicited messages
+sent by wpa_supplicant to the attached interface. When this string is received,
+it means the call can proceed. For instance, when a scan has been requested,
+the string to watch is <tt>CTRL-EVENT-SCAN-RESULTS</tt>. </li>
+ <li> <tt>int *cb (wpactrl_t *a, char const *msg, size_t msglen, void *aux, tain_t *stamp)</tt>&nbsp;:
+A pointer to a function that will be run as a callback when a message matching the <em>filter</em>
+field is received. It will be called with the following arguments:
+ <ul>
+  <li> <em>a</em>&nbsp;: the connection handle </li>
+  <li> <em>msg</em>&nbsp;: the message from wpa_supplicant </li>
+  <li> <em>msglen</em>&nbsp;: the size of the message </li>
+  <li> <em>aux</em>&nbsp;: the <em>aux</em> pointer provided to this <tt>wpactrl_xchg_init()</tt> call </li>
+  <li> <em>stamp</em>&nbsp;: a pointer to the current time (at the time of the callback) </li>
+ </ul> </li>
+</ul>
+
+<p>
+The <em>*cb</em> function must return 0 (and set errno) if it fails, or a
+positive integer if it succeeds. The objects in <em>tab</em> will be used
+sequentially: first a message with <em>dt&rarr;tab[0].filter</em> will
+be waited for, then <em>*dt&rarr;tab[0].cb</em> will be run; if it
+succeeds, a message with <em>dt&rarr;tab[1].filter</em> will be waited for,
+and so on. The last function, <em>*dt&rarr;tab[tablen-1].cb</em>, should
+write the final result of the whole to a place accessible by the
+user; this is one of the uses for the <em>aux</em> pointer.
+</p>
+
+<p>
+<em>limit</em> is a deadline: an absolute date after which the whole series of
+exchanges with wpa_supplicant will stop and be considered failed, i.e.
+<a href="//skarnet.org/software/skalibs/libstddjb/iopause.html">iopause</a>
+will report a timeout and <tt>wpactrl_xchg_timeout()</tt> called on
+<em>dt</em> will return 1.
+</p>
+
+<p>
+<code> int wpactrl_xchg_start (wpactrl_t *a, wpactrl_xchg_t *dt) </code> <br />
+Starts the exchange defined in the object pointed to by <em>dt</em>, with the
+wpa_supplicant instance defined by the handle <em>a</em>. Returns 1 if it
+succeeds and 0 if it fails.
+</p>
+
+<p>
+<code> void wpactrl_xchg_computedeadline (wpactrl_xchg_t const *dt, tain_t *deadline) </code> <br />
+Updates the deadline pointed to by <em>deadline</em>, destined to be used in the next
+<a href="//skarnet.org/software/skalibs/libstddjb/iopause.html">iopause</a> invocation,
+with the one contained in <em>*dt</em>. Namely: if the deadline defined by <em>*dt</em>
+is earlier than <em>*deadline</em>, replaces the latter with the former.
+</p>
+
+<p>
+<code> int wpactrl_xchg_timeout (wpactrl_t *a, wpactrl_xchg_t *dt, tain_t const *stamp) </code> <br />
+To be called after an <tt>iopause</tt> invocation that returned 0.
+Tests whether the exchange
+defined by <em>dt</em> has timed out. Returns 1 (and cleans up the relevant
+filters in <em>a</em> if it is the case, and 0 otherwise. <em>stamp</em> must
+point to the current time.
+</p>
+
+<p>
+<code> int wpactrl_xchg_event (wpactrl_t *a, wpactrl_xchg_t *dt, tain_t *stamp) </code> <br />
+To be called after an <tt>iopause</tt> invocation that returned a positive number, and
+after a <tt>wpactrl_update(<em>a</em>) invocation.
+Advances the exchange described in <em>*dt</em>, if applicable: if a message arrived
+that matches the current filter set up by <em>*dt</em>, executes the corresponding
+callback, then sets up the next filter. <em>stamp</em> must point to the current
+time.
+</p>
+
+<p>
+ The function returns a negative number if an error occurred and the exchange needs
+to be cancelled and freed; 0 if the exchange isn't over yet; and a positive number
+if the exchange completed successfully. Namely:
+</p>
+
+<ul>
+ <li> -2: a callback was run and returned an error. </li>
+ <li> -1: an error occurred during execution of <tt>wpactrl_xchg_event()</tt>.
+ <li> 0: either the message from wpa_supplicant that <em>*dt</em> is expecting
+has not arrived yet, or it has arrived, the relevant callback has been run and
+has succeeded, and it was not the last part of the exchange - <em>*dt</em> is
+now waiting for another message. </li>
+ <li> 1: the exchange completed successfully. The last callback should have
+written the results to the auxiliary pointer. <em>dt</em> can now be ignored. </li>
+ <li> 2: the exchange already completed in a previous invocation of
+<tt>wpactrl_xchg_event()</tt>. It's still a success, but likely signals a programming
+error. </li>
+</ul>
 
 </body>
 </html>
