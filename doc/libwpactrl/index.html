@@ -348,10 +348,10 @@ considered failed: if the current time goes over <em>limit</em>, then
 But if <tt>wpactrl_xchg_event()</tt> reports that an event occurs on
 <em>item</em>, instead, the results will be available in the
 <tt>wpactrl_xchg_cbres_t</tt> structure pointed to by <em>res</em>:
-<em>res&arr;parsed</em> will be a
+<em>res&rarr;parsed</em> will be a
 <a href="//skarnet.org/software/skalibs/libstddjb/genalloc.html">genalloc</a>
 made of <tt>wpactrl_scanres_t</tt> objects, constructed by the
-<tt>wpactrl_scan_parse()</tt> function, and <em>res&arr;storage</em> will
+<tt>wpactrl_scan_parse()</tt> function, and <em>res&rarr;storage</em> will
 be the associated storage.
 <tt>wpactrl_startscan()</tt> returns 0 (and sets errno) if an error
 occurs, and 1 if the scan is properly started.
