@@ -338,9 +338,9 @@ The function returns 1 on success, or 0 if something went wrong.
 </p>
 
 <p>
-<code> int wpactrl_startscan (wpactrl_t *a, wpactrl_xchgitem_t *item, wpactrl_xchg_cbres_t *res, tain_t const *limit, tain_t *stamp) </code> </br>
-Asks wpa_supplicant to start a scan. Sets up the <tt>wpactrl_xchgitem_t</tt>
-structure pointed to by <em>item</em> so it can be used in an asynchronous
+<code> int wpactrl_startscan (wpactrl_t *a, wpactrl_xchg_t *dt, wpactrl_xchg_cbres_t *res, tain_t const *limit, tain_t *stamp) </code> </br>
+Asks wpa_supplicant to start a scan. Sets up the <tt>wpactrl_xchg_t</tt>
+structure pointed to by <em>dt</em> so it can be used in an asynchronous
 event loop to check for availability of the scan results (see below).
 <em>limit</em> is an absolute deadline after which the scan should be
 considered failed: if the current time goes over <em>limit</em>, then
