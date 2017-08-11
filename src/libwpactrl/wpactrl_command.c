@@ -15,7 +15,7 @@ wparesponse_t wpactrl_command (wpactrl_t *a, char const *s, tain_t *stamp)
 {
   static struct wparesponse_map_s const wparesponses[] =
   {
-    {  "OK\n", WPA_OK },
+    { "OK\n", WPA_OK },
     { "PONG\n", WPA_PONG },
     { "UNKNOWN COMMAND\n", WPA_UNKNOWNCOMMAND },
     { "FAIL\n", WPA_FAIL },
