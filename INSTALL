@@ -19,7 +19,14 @@ other Unix-like operating systems.
   ./configure && make && sudo make install
 
  will work for most users.
- It will install the binaries in /usr/bin and the libraries in /usr/lib.
+ It will install the binaries in /usr/bin and the libraries in /usr/lib/bcnm.
+
+ Please note that static libraries in /usr/lib/bcnm *will not*
+be found by a default linker invocation: you need -L/usr/lib/bcnm.
+Other skarnet.org software automatically handles that case if the
+default configuration is used, but if you change the configuration,
+remember to use the appropriate --with-lib configure option.
+
 
  You can strip the binaries and libraries of their extra symbols via
 "make strip" before the "make install" phase. It will shave a few bytes
