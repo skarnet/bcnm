@@ -34,17 +34,9 @@ int wpactrl_start (wpactrl_t *a, char const *path, unsigned int timeout, tain_t 
   return 1 ;
 
  erra:
-  {
-    int e = errno ;
-    fd_close(fda) ;
-    errno = e ;
-  }
+  fd_close(fda) ;
  errs:
-  {
-    int e = errno ;
-    fd_close(fds) ;
-    errno = e ;
-  }
+  fd_close(fds) ;
  err:
   return 0 ;
 }
