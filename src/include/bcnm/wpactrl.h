@@ -15,7 +15,6 @@ extern "C" {
 #include <skalibs/stralloc.h>
 #include <skalibs/genalloc.h>
 
-typedef enum wparesponse_e wparesponse_t, *wparesponse_t_ref ;
 enum wparesponse_e
 {
   WPA_OK = 0,
@@ -36,6 +35,7 @@ enum wparesponse_e
   WPA_FAILNOIFNAMEMATCH = -14,
   WPA_UNKNOWNRESPONSE = -999
 } ;
+typedef enum wparesponse_e wparesponse_t, *wparesponse_t_ref ;
 
 typedef struct wpactrl_s wpactrl_t, *wpactrl_t_ref ;
 struct wpactrl_s
