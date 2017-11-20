@@ -3,6 +3,10 @@
 #ifndef BCNM_WPACTRL_H
 #define BCNM_WPACTRL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <sys/types.h>
 #include <stdint.h>
 #include <errno.h>
@@ -44,7 +48,7 @@ struct wpactrl_s
   stralloc data ;
   stralloc filters ;
 } ;
-#define WPACTRL_ZERO { .fds = -1, .fda = -1, .options = 0, .tto = TAIN_ZERO, .datahead = 0, .data = STRALLOC_ZERO, .filters = STRALLOC_ZERO }
+#define WPACTRL_ZERO { -1, -1, 0, TAIN_ZERO, 0, STRALLOC_ZERO, STRALLOC_ZERO }
 
 #define WPACTRL_OPTION_NOFILTER 0x0001U
 
@@ -92,7 +96,7 @@ struct wpactrl_scanres_s
   size_t ssid_start ;
   size_t ssid_len ;
 } ;
-#define WPACTRL_SCANRES_ZERO { .bssid = "\0\0\0\0\0", .frequency = 0, .signal_level = 0, .flags_start = 0, .flags_len = 0, .ssid_start = 0, .ssid_len = 0 }
+#define WPACTRL_SCANRES_ZERO { "\0\0\0\0\0", 0, 0, 0, 0, 0, 0 }
 
 extern int wpactrl_scan_parse (char const *, size_t, genalloc * /* wpactrl_scanres_t */, stralloc *) ;
 
@@ -132,8 +136,8 @@ struct wpactrl_xchg_s
   int status ;
   void *aux ;
 } ;
-#define WPACTRL_XCHG_ZERO { .tab = 0, .n = 0, .i = 0, .deadline = TAIN_ZERO, .status = ECONNABORTED, .aux = 0 }
-#define WPACTRL_XCHG_INIT(array, size, limit, extra) { .tab = array, .n = size, .i = 0, .deadline = limit, .status = ECONNABORTED, .aux = extra }
+#define WPACTRL_XCHG_ZERO { 0, 0, 0, TAIN_ZERO, ECONNABORTED, 0 }
+#define WPACTRL_XCHG_INIT(array, size, limit, extra) { array, size, 0, limit, ECONNABORTED, extra }
 
 extern wpactrl_xchg_t const wpactrl_xchg_zero ;
 extern void wpactrl_xchg_init (wpactrl_xchg_t *, wpactrl_xchgitem_t const *, unsigned int, tain_t const *, void *) ;
@@ -151,7 +155,7 @@ struct wpactrl_xchg_cbres_s
   genalloc parsed ;
   stralloc storage ;
 } ;
-#define WPACTRL_XCHG_CBRES_ZERO { .parsed = GENALLOC_ZERO, .storage = STRALLOC_ZERO }
+#define WPACTRL_XCHG_CBRES_ZERO { GENALLOC_ZERO, STRALLOC_ZERO }
 
 extern wpactrl_xchg_cbres_t const wpactrl_xchg_cbres_zero ;
 extern void wpactrl_xchg_cbres_free (wpactrl_xchg_cbres_t *) ;
@@ -179,5 +183,9 @@ extern int wpactrl_associate (wpactrl_t *, char const *, char const *, tain_t *)
 
 extern int wpactrl_startscan (wpactrl_t *, wpactrl_xchg_t *, wpactrl_xchg_cbres_t *, tain_t const *, tain_t *) ;
 #define wpactrl_startscan_g(a, xchg, res, limit) wpactrl_startscan(a, xchg, res, (limit), &STAMP)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
