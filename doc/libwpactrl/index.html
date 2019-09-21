@@ -39,7 +39,7 @@ distribution.
  <li> Make sure the bcnm libraries, as well as the skalibs
 libraries, are visible in your library search path. </li>
  <li> Link against <tt>-lwpactrl</tt> and <tt>-lskarnet</tt>.
-Also add <tt>`cat $sysdeps/socket.lib $sysdeps/tainnow.lib`</tt>
+Also add <tt>`cat $sysdeps/socket.lib $sysdeps/sysclock.lib`</tt>
 to the end of your command line invoking the linker, in order
 to be portable to libcs that put socket or time functions into
 separate libraries.
