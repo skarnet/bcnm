@@ -26,7 +26,7 @@ src/libwpactrl/wpactrl_removenetwork.o src/libwpactrl/wpactrl_removenetwork.lo: 
 src/libwpactrl/wpactrl_scan_parse.o src/libwpactrl/wpactrl_scan_parse.lo: src/libwpactrl/wpactrl_scan_parse.c src/include/bcnm/wpactrl.h
 src/libwpactrl/wpactrl_selectnetwork.o src/libwpactrl/wpactrl_selectnetwork.lo: src/libwpactrl/wpactrl_selectnetwork.c src/include/bcnm/wpactrl.h
 src/libwpactrl/wpactrl_setnetworkoption.o src/libwpactrl/wpactrl_setnetworkoption.lo: src/libwpactrl/wpactrl_setnetworkoption.c src/include/bcnm/wpactrl.h
-src/libwpactrl/wpactrl_start.o src/libwpactrl/wpactrl_start.lo: src/libwpactrl/wpactrl_start.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
+src/libwpactrl/wpactrl_start.o src/libwpactrl/wpactrl_start.lo: src/libwpactrl/wpactrl_start.c src/include/bcnm/config.h src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
 src/libwpactrl/wpactrl_startscan.o src/libwpactrl/wpactrl_startscan.lo: src/libwpactrl/wpactrl_startscan.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
 src/libwpactrl/wpactrl_update.o src/libwpactrl/wpactrl_update.lo: src/libwpactrl/wpactrl_update.c src/include/bcnm/wpactrl.h src/libwpactrl/wpactrl-internal.h
 src/libwpactrl/wpactrl_xchg_cbres_free.o src/libwpactrl/wpactrl_xchg_cbres_free.lo: src/libwpactrl/wpactrl_xchg_cbres_free.c src/include/bcnm/wpactrl.h

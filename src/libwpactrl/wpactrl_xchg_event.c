@@ -27,7 +27,7 @@ int wpactrl_xchg_event (wpactrl_t *a, wpactrl_xchg_t *dt, tain_t *stamp)
   if (pos >= a->data.len) return 0 ;
   len = strlen(a->data.s + pos) + 1 ;
   if (!(*dt->tab[dt->i].cb)(a, a->data.s + pos, len - 1, dt->aux, stamp)) return -2 ;
-  memmove(a->data.s + pos, a->data.s + pos + len, a->data.len - len) ;
+  memmove(a->data.s + pos, a->data.s + pos + len, a->data.len - pos - len) ;
   a->data.len -= len ;
   wpactrl_filter_remove(a, dt->tab[dt->i].filter) ;
   if (++dt->i == dt->n)

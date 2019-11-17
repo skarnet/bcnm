@@ -45,6 +45,7 @@ Optional features:
   --enable-slashpackage[=ROOT]  assume /package installation at ROOT [disabled]
   --enable-absolute-paths       do not rely on PATH to access this package's binaries,
                                   hardcode absolute BINDIR/foobar paths instead [disabled]
+  --with-tmpdir=DIR             assume a writable-for-all directory at DIR [/tmp]
 
 EOF
 exit 0
@@ -158,6 +159,7 @@ addlibdpath=''
 vpaths=''
 vpathd=''
 build=
+tmpdir=/tmp
 
 for arg ; do
   case "$arg" in
@@ -191,6 +193,7 @@ for arg ; do
     --enable-*|--disable-*|--with-*|--without-*|--*dir=*) ;;
     --host=*|--target=*) target=${arg#*=} ;;
     --build=*) build=${arg#*=} ;;
+    --with-tmpdir=*) tmpdir=${arg#*=} ;;
     -* ) echo "$0: unknown option $arg" ;;
     *=*) ;;
     *) target=$arg ;;
@@ -212,7 +215,7 @@ fi
 
 # Expand installation directories
 stripdir prefix
-for i in exec_prefix dynlibdir libexecdir bindir libdir includedir sysdeps sproot ; do
+for i in exec_prefix dynlibdir libexecdir bindir libdir includedir sysdeps sproot tmpdir ; do
   eval tmp=\${$i}
   eval $i=$tmp
   stripdir $i
@@ -396,6 +399,7 @@ sproot := $sproot
 version := $version
 home := $home
 exthome := $exthome
+tmpdir := $tmpdir
 SPAWN_LIB := ${spawn_lib}
 SOCKET_LIB := ${socket_lib}
 SYSCLOCK_LIB := ${sysclock_lib}
@@ -465,6 +469,7 @@ else
   echo "#define ${package_macro_name}_EXTBINPREFIX \"\""
 fi
 echo "#define ${package_macro_name}_LIBEXECPREFIX \"$libexecdir/\""
+echo "#define ${package_macro_name}_TMPDIR \"$tmpdir\""
 echo
 echo "#endif"
 exec 1>&3 3>&-
