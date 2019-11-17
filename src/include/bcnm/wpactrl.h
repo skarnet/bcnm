@@ -91,7 +91,7 @@ struct wpactrl_scanres_s
 {
   char bssid[6] ;
   uint32_t frequency ;
-  uint32_t signal_level ;
+  int32_t signal_level ;
   size_t flags_start ;
   size_t flags_len ;
   size_t ssid_start ;

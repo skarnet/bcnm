@@ -24,7 +24,7 @@ static int wpactrl_scan_parse_one (char const *s, size_t len, wpactrl_scanres_t 
   s += pos + 1 ; len -= pos + 1 ;
   pos = byte_chr(s, len, '\t') ;
   if (pos >= len) goto eproto ;
-  if (uint32_scan(s, &sr.signal_level) != pos) goto eproto ;
+  if (int32_scan(s, &sr.signal_level) != pos) goto eproto ;
   s += pos + 1 ; len -= pos + 1 ;
   pos = byte_chr(s, len, '\t') ;
   if (pos >= len) goto eproto ;
