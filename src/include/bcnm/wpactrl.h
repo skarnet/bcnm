@@ -47,8 +47,9 @@ struct wpactrl_s
   size_t datahead ;
   stralloc data ;
   stralloc filters ;
+  stralloc clientpath ;
 } ;
-#define WPACTRL_ZERO { -1, -1, 0, TAIN_ZERO, 0, STRALLOC_ZERO, STRALLOC_ZERO }
+#define WPACTRL_ZERO { -1, -1, 0, TAIN_ZERO, 0, STRALLOC_ZERO, STRALLOC_ZERO, STRALLOC_ZERO }
 
 #define WPACTRL_OPTION_NOFILTER 0x0001U
 

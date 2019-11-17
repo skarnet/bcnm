@@ -132,7 +132,10 @@ will immediately be aborted.
 
 <p>
 <code> int wpactrl_end (wpactrl_t *a) </code> <br />
-Ends the session, freeing all used resources.
+Ends the session, freeing all used resources. It is important
+to use this function even if your process exits right away,
+because <tt>wpactrl_end()</tt> will also delete entries in
+the filesystem.
 </p>
 
 <h3> Low-level command sending </h3>
