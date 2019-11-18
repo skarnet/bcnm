@@ -14,6 +14,7 @@ size_t wpactrl_flags_scan (char const *t, stralloc *sa)
   while (*s == '[')
   {
     size_t pos ;
+    s++;
     pos = str_chr(s, ']') ;
     if (!s[pos]) goto eproto ;
     if (!stralloc_catb(sa, s, pos) || !stralloc_0(sa)) goto err ;
