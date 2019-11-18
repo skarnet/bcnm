@@ -33,8 +33,8 @@ static int wpactrl_scan_parse_one (char const *s, size_t len, wpactrl_scanres_t 
   s += pos + 1 ; len -= pos + 1 ;
   sr.flags_len = sa->len - sr.flags_start ;
   sr.ssid_start = sa->len ;
-  sr.ssid_len = len ? len - 1 : 0 ;
-  if (!stralloc_catb(sa, s, len ? len - 1 : 0) || !stralloc_0(sa)) return 0 ;
+  sr.ssid_len = len ;
+  if (!stralloc_catb(sa, s, len) || !stralloc_0(sa)) return 0 ;
   *thing = sr ;
   return 1 ;
 
