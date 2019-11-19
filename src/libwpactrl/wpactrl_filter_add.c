@@ -9,5 +9,5 @@
 int wpactrl_filter_add (wpactrl_t *a, char const *s)
 {
   if (wpactrl_filter_exact_search(a, s) < a->filters.len) return (errno = EBUSY, 0) ;
-  return stralloc_catb(&a->filters, s, strlen(s)) ;
+  return stralloc_catb(&a->filters, s, strlen(s) + 1) ;
 }
