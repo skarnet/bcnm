@@ -22,13 +22,13 @@ static int wpactrl_networks_parse_one (char const *s, size_t len, wpactrl_networ
   pos = byte_rchr(s, len, '\t') ;
   if (!pos || pos >= len) goto eproto ;
   sr.flags_start = sa->len ;
-  if (wpactrl_flags_scan(s + pos + 1, sa) != pos) goto eproto ;
+  if (wpactrl_flags_scan(s + pos + 1, sa) != len - pos - 1) goto eproto ;
   sr.flags_len = sa->len - sr.flags_start ;
   len = pos ;
 
   pos = byte_rchr(s, len - 1, '\t') ;
   if (!pos || pos >= len - 1) goto eproto ;
-  if (wpactrl_bssid_scan(s + pos + 1, sr.bssid) != len - 1) goto eproto ;
+  if (wpactrl_bssid_scan(s + pos + 1, sr.bssid) != len - pos - 1) goto eproto ;
   len = pos ;
 
   sr.ssid_start = sa->len ;
