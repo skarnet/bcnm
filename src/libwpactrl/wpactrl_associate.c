@@ -14,9 +14,10 @@ int wpactrl_associate (wpactrl_t *a, char const *ssid, char const *psk, tain_t *
     if (!wpactrl_addnetwork(a, &id, stamp)) goto err ;
   }
 
+  if (wpactrl_setnetworkoption(a, id, "ssid", ssid, stamp) != WPA_OK) goto err ;
   if (psk)
   {
-    if (wpactrl_setnetworkoption(a, id, "key_mgmt", "WPA-PSK WPA-PSK-SHA256", stamp) != WPA_OK
+    if (wpactrl_setnetworkoption(a, id, "key_mgmt", "WPA-PSK", stamp) != WPA_OK
      || wpactrl_setnetworkoption(a, id, "mem_only_psk", "1", stamp) != WPA_OK
      || wpactrl_setnetworkoption(a, id, "psk", psk, stamp) != WPA_OK) goto err ;
   }

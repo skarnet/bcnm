@@ -3,12 +3,14 @@
 #include <string.h>
 #include <stdint.h>
 #include <errno.h>
+
 #include <skalibs/uint32.h>
 #include <skalibs/bytestr.h>
 #include <skalibs/error.h>
 #include <skalibs/fmtscan.h>
 #include <skalibs/stralloc.h>
 #include <skalibs/genalloc.h>
+
 #include <bcnm/wpactrl.h>
 
 static int wpactrl_networks_parse_one (char const *s, size_t len, wpactrl_networks_t *thing, stralloc *sa)
@@ -27,10 +29,10 @@ static int wpactrl_networks_parse_one (char const *s, size_t len, wpactrl_networ
   len = pos ;
 
   pos = byte_rchr(s, len - 1, '\t') ;
-  if (!pos || pos >= len - 1) goto eproto ;
+  if (pos >= len - 1) goto eproto ;
   if (wpactrl_bssid_scan(s + pos + 1, sr.bssid) != len - pos - 1) goto eproto ;
   len = pos ;
-
+  if (!len) len = 1 ;
   sr.ssid_start = sa->len ;
   sr.ssid_len = len - 1 ;
   if (!stralloc_catb(sa, s, len - 1) || !stralloc_0(sa)) return 0 ;
