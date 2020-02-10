@@ -7,3 +7,4 @@
 *.so.xyzzy
 config.mak
 src/include/bcnm/config.h
+bcnm-waitif

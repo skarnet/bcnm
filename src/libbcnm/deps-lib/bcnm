@@ -1,0 +1,3 @@
+bcnm_if_getstate.o
+bcnm_if_link_init.o
+bcnm_if_link_event.o
