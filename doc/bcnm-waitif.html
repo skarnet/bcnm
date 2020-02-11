@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>bcnm: the bcnm-waitif program</title>
+    <meta name="Description" content="bcnm: the bcnm-waitif program" />
+    <meta name="Keywords" content="bcnm waitif interface state up running flag notification netlink" />
+    <!-- <link rel="stylesheet" type="text/css" href="//skarnet.org/default.css" /> -->
+  </head>
+<body>
+
+<p>
+<a href="index.html">s6</a><br />
+<a href="//skarnet.org/software/">Software</a><br />
+<a href="//skarnet.org/">skarnet.org</a>
+</p>
+
+<h1> The <tt>bcnm-waitif</tt> program </h1>
+
+<p>
+<tt>bcnm-waitif</tt> waits until a set of network interfaces are in the desired state,
+or a timeout occurs. Then it exits. It is typically used to avoid race conditions
+in a service startup sequence.
+</p>
+
+<h2> Interface </h2>
+
+<pre>
+     bcnm-waitif [ -u | -d ] [ -t <em>timeout</em> ] [ -k <em>kbufsize</em> ] <em>mask</em> <em>interface...</em>
+</pre>
+
+<ul>
+ <li> <tt>bcnm-waitif</tt> reads the state of all the interfaces specified by
+name as the <em>interface...</em> arguments. </li>
+ <li> If all the listed interfaces match the state defined in <em>mask</em>,
+it exits 0. </li>
+ <li> Else, it waits for network interface state changes, and performs the
+check again. </li>
+ <li> It loops until all the listed interfaces are in the desired state,
+or a timeout (if defined) occurs. </li>
+</ul>
+
+<h2> <em>mask</em> meaning </h2>
+
+<p>
+ <em>mask</em> is an unsigned integer representing a bitmask for the
+flags to be tested. If several bits are given, the wanted state is the
+conjunction of these flags: the condition will be true if <em>all</em>
+those checks pass.
+</p>
+
+<ul>
+ <li> 1: the interface exists (the kernel knows about it) </li>
+ <li> 2: the interface is UP (the administrator has activated it) </li>
+ <li> 4: the interface is RUNNING (functional, not unplugged) </li>
+</ul>
+
+<h2> Options </h2>
+
+<ul>
+ <li> <tt>-u</tt>&nbsp;: up. <tt>bcnm-waitif</tt> will wait until all
+the states defined in <em>mask</em> are reached by all the interfaces
+in <em>interface...</em>. This is the default. </li>
+ <li> <tt>-d</tt>&nbsp;: down. <tt>bcnm-waitif</tt> will wait until
+<em>none</em> of the states defined in <em>mask</em> is true. </li>
+ <li> <tt>-t&nbsp;<em>timeout</em></tt>&nbsp;: if the desired state
+still has not been reached after <em>timeout</em> milliseconds,
+<tt>bcnm-waitif</tt> will exit 99 with an error message. The default
+is 0, meaning there is no timeout and the program can wait forever. </li>
+ <li> <tt>-k&nbsp;<em>kbufsize</em></tt>&nbsp;: use <em>kbufsize</em>
+bytes for the netlink socket buffer. Too small a buffer risks losing
+state change events and reporting incorrect results. Too large a buffer
+wastes memory. Default is 131072, which is probably on the large side. </li>
+</ul>
+
+<h2> Exit codes </h2>
+
+<ul>
+ <li> 0: success </li>
+ <li> 99: timed out </li>
+ <li> 100: wrong usage </li>
+ <li> 111: system call failed </li>
+</ul>
+
+</body>
+</html>
