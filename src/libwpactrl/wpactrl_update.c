@@ -3,10 +3,10 @@
 #include <string.h>
 #include <errno.h>
 
-#include <skalibs/posixishard.h>
 #include <skalibs/error.h>
 #include <skalibs/allreadwrite.h>
 #include <skalibs/stralloc.h>
+#include <skalibs/posixishard.h>
 
 #include <bcnm/wpactrl.h>
 #include "wpactrl-internal.h"
