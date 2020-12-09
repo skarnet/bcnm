@@ -6,7 +6,7 @@
 #include <skalibs/posixplz.h>
 #include <skalibs/stralloc.h>
 #include <skalibs/djbunix.h>
-#include <skalibs/webipc.h>
+#include <skalibs/socket.h>
 #include <skalibs/skamisc.h>
 #include <skalibs/unix-timed.h>
 
