@@ -13,7 +13,7 @@ Unix systems.
 It just implements a state machine and send commands to other processes
 such as wpa_supplicant and a user-configured DHCP client.
 
- See http://skarnet.org/software/bcnm/ for details.
+ See https://skarnet.org/software/bcnm/ for details.
 
 
 * Installation
