@@ -20,16 +20,20 @@
 <h2> What is it&nbsp;? </h2>
 
 <p>
- bcnm is a client network manager: it automatically handles network
-connections for a client machine. It supports Ethernet and Wi-Fi.
-IP addresses can be attributed statically or via DHCP.
+ In its final form, bcnm is a client network manager: it automatically
+handles network connections for a client machine. It supports Ethernet
+and Wi-Fi. IP addresses can be attributed statically or via DHCP.
 </p>
 
 <p>
-<strong>
- This is very much a work in progress. Do not expect full functionality
-in the short or even middle term.
-</strong>
+However, given the existence, and work being done, on
+<a href="https://github.com/ifupdown-ng/ifupdown-ng">ifupdown-ng</a>,
+it is likely that not much effort will be put into the "network
+manager" part of bcnm. The package as it exists today is still maintained,
+because some tools rely on the programs and libraries it already
+provides: a tool to wait for network interfaces to reach a
+certain state, and a comfortable C API to control
+<a href="https://w1.fi/wpa_supplicant/">wpa_supplicant</a>.
 </p>
 
 <hr />
