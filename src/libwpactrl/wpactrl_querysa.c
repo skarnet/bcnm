@@ -5,7 +5,7 @@
 #include <bcnm/wpactrl.h>
 #include "wpactrl-internal.h"
 
-int wpactrl_querysa (wpactrl_t *a, char const *s, stralloc *sa, tain_t *stamp)
+int wpactrl_querysa (wpactrl_t *a, char const *s, stralloc *sa, tain *stamp)
 {
   char buf[WPACTRL_PACKET_MAX] ;
   ssize_t r = wpactrl_query(a, s, buf, WPACTRL_PACKET_MAX, stamp) ;

@@ -25,13 +25,13 @@ static inline int check (bcnm_if_link_state_t *tab, size_t n, unsigned int mask,
 int main (int argc, char const *const *argv)
 {
   iopause_fd x = { .events = IOPAUSE_READ } ;
-  tain_t deadline, tto ;
+  tain deadline, tto ;
   int not = 0 ;
   unsigned int mask = 1 ;
   unsigned int kbufsize = 131072 ;
   PROG = "bcnm-waitif" ;
   {
-    subgetopt_t l = SUBGETOPT_ZERO ;
+    subgetopt l = SUBGETOPT_ZERO ;
     unsigned int t = 0 ;
     for (;;)
     {

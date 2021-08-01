@@ -4,7 +4,7 @@
 #include <errno.h>
 #include <bcnm/wpactrl.h>
 
-int wpactrl_associate (wpactrl_t *a, char const *ssid, char const *psk, tain_t *stamp)
+int wpactrl_associate (wpactrl_t *a, char const *ssid, char const *psk, tain *stamp)
 {
   uint32_t id ;
   int r = wpactrl_findnetwork(a, ssid, &id, stamp) ;

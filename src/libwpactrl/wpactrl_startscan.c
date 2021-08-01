@@ -4,7 +4,7 @@
 #include <bcnm/wpactrl.h>
 #include "wpactrl-internal.h"
 
-static int wpactrl_scan_cb (wpactrl_t *a, char const *s, size_t len, void *aux, tain_t *stamp)
+static int wpactrl_scan_cb (wpactrl_t *a, char const *s, size_t len, void *aux, tain *stamp)
 {
   wpactrl_xchg_cbres_t *res = aux ;
   char buf[WPACTRL_PACKET_MAX] ;
@@ -21,7 +21,7 @@ static wpactrl_xchgitem_t wpactrl_xchgitem_scan =
   .cb = &wpactrl_scan_cb
 } ;
 
-int wpactrl_startscan (wpactrl_t *a, wpactrl_xchg_t *xchg, wpactrl_xchg_cbres_t *res, tain_t const *deadline, tain_t *stamp)
+int wpactrl_startscan (wpactrl_t *a, wpactrl_xchg_t *xchg, wpactrl_xchg_cbres_t *res, tain const *deadline, tain *stamp)
 {
   wparesponse_t r = wpactrl_command(a, "SCAN", stamp) ;
   if (r != WPA_OK && r != WPA_FAILBUSY) return (errno = EIO, 0) ;

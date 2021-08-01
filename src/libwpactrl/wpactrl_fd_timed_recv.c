@@ -22,8 +22,8 @@ static ssize_t get (struct blah_s *blah)
   return sanitize_read(wpactrl_fd_recv(blah->fd, blah->s, blah->len)) ;
 }
 
-ssize_t wpactrl_fd_timed_recv (int fd, char *s, size_t len, tain_t const *deadline, tain_t *stamp)
+ssize_t wpactrl_fd_timed_recv (int fd, char *s, size_t len, tain const *deadline, tain *stamp)
 {
   struct blah_s blah = { .fd = fd, .s = s, .len = len } ;
-  return timed_get(&blah, (initfunc_t_ref)&getfd, (getfunc_t_ref)&get, deadline, stamp) ;
+  return timed_get(&blah, (init_func_ref)&getfd, (get_func_ref)&get, deadline, stamp) ;
 }

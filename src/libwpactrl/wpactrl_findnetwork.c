@@ -5,7 +5,7 @@
 #include <bcnm/wpactrl.h>
 #include "wpactrl-internal.h"
 
-int wpactrl_findnetwork (wpactrl_t *a, char const *ssid, uint32_t *id, tain_t *stamp)
+int wpactrl_findnetwork (wpactrl_t *a, char const *ssid, uint32_t *id, tain *stamp)
 {
   char buf[WPACTRL_PACKET_MAX] ;
   stralloc sa = STRALLOC_ZERO ;

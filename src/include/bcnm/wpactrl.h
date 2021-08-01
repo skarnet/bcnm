@@ -43,7 +43,7 @@ struct wpactrl_s
   int fds ;
   int fda ;
   uint32_t options ;
-  tain_t tto ;
+  tain tto ;
   size_t datahead ;
   stralloc data ;
   stralloc filters ;
@@ -55,15 +55,15 @@ struct wpactrl_s
 
 extern wpactrl_t const wpactrl_zero ;
 
-extern int wpactrl_start (wpactrl_t *, char const *, unsigned int, tain_t *) ;
+extern int wpactrl_start (wpactrl_t *, char const *, unsigned int, tain *) ;
 #define wpactrl_start_g(a, path, timeout) wpactrl_start(a, path, (timeout), &STAMP)
 extern void wpactrl_end (wpactrl_t *) ;
 
-extern wparesponse_t wpactrl_command (wpactrl_t *, char const *, tain_t *) ;
+extern wparesponse_t wpactrl_command (wpactrl_t *, char const *, tain *) ;
 #define wpactrl_command_g(a, q) wpactrl_command(a, (q), &STAMP)
-extern ssize_t wpactrl_query (wpactrl_t *, char const *, char *, size_t, tain_t *) ;
+extern ssize_t wpactrl_query (wpactrl_t *, char const *, char *, size_t, tain *) ;
 #define wpactrl_query_g(a, q, ans, ansmax) wpactrl_query(a, q, ans, (ansmax), &STAMP)
-extern int wpactrl_querysa (wpactrl_t *, char const *, stralloc *, tain_t *) ;
+extern int wpactrl_querysa (wpactrl_t *, char const *, stralloc *, tain *) ;
 #define wpactrl_querysa_g(a, q, sa) wpactrl_querysa(a, q, (sa), &STAMP)
 
 extern int wpactrl_filter_add (wpactrl_t *, char const *) ;
@@ -117,14 +117,14 @@ extern int wpactrl_networks_parse (char const *, size_t, genalloc * /* wpactrl_n
 
  /* Functions for easy iopause around async commands */
 
-typedef int wpactrl_xchg_func_t (wpactrl_t *, char const *, size_t, void *, tain_t *) ;
-typedef wpactrl_xchg_func_t *wpactrl_xchg_func_t_ref ;
+typedef int wpactrl_xchg_func (wpactrl_t *, char const *, size_t, void *, tain *) ;
+typedef wpactrl_xchg_func *wpactrl_xchg_func_ref ;
 
 typedef struct wpactrl_xchgitem_s wpactrl_xchgitem_t, *wpactrl_xchgitem_t_ref ;
 struct wpactrl_xchgitem_s
 {
   char const *filter ;
-  wpactrl_xchg_func_t_ref cb ;
+  wpactrl_xchg_func_ref cb ;
 } ;
 
 typedef struct wpactrl_xchg_s wpactrl_xchg_t, *wpactrl_xchg_t_ref ;
@@ -133,7 +133,7 @@ struct wpactrl_xchg_s
   wpactrl_xchgitem_t const *tab ; 
   unsigned int n ;
   unsigned int i ;
-  tain_t deadline ;
+  tain deadline ;
   int status ;
   void *aux ;
 } ;
@@ -141,13 +141,13 @@ struct wpactrl_xchg_s
 #define WPACTRL_XCHG_INIT(array, size, limit, extra) { array, size, 0, limit, ECONNABORTED, extra }
 
 extern wpactrl_xchg_t const wpactrl_xchg_zero ;
-extern void wpactrl_xchg_init (wpactrl_xchg_t *, wpactrl_xchgitem_t const *, unsigned int, tain_t const *, void *) ;
+extern void wpactrl_xchg_init (wpactrl_xchg_t *, wpactrl_xchgitem_t const *, unsigned int, tain const *, void *) ;
 extern int wpactrl_xchg_start (wpactrl_t *, wpactrl_xchg_t *) ;
 
-extern void wpactrl_xchg_computedeadline (wpactrl_xchg_t const *, tain_t *) ;
-extern int wpactrl_xchg_timeout (wpactrl_t *, wpactrl_xchg_t *, tain_t const *) ;
+extern void wpactrl_xchg_computedeadline (wpactrl_xchg_t const *, tain *) ;
+extern int wpactrl_xchg_timeout (wpactrl_t *, wpactrl_xchg_t *, tain const *) ;
 #define wpactrl_xchg_timeout_g(a, dt) wpactrl_xchg_timeout(a, (dt), &STAMP)
-extern int wpactrl_xchg_event (wpactrl_t *, wpactrl_xchg_t *, tain_t *) ;
+extern int wpactrl_xchg_event (wpactrl_t *, wpactrl_xchg_t *, tain *) ;
 #define wpactrl_xchg_event_g(a, dt) wpactrl_xchg_event(a, (dt), &STAMP)
 
 typedef struct wpactrl_xchg_cbres_s wpactrl_xchg_cbres_t, *wpactrl_xchg_cbres_t_ref ;
@@ -164,25 +164,25 @@ extern void wpactrl_xchg_cbres_free (wpactrl_xchg_cbres_t *) ;
 
  /* High-level functions for common calls to wpa_supplicant */
 
-extern int wpactrl_addnetwork (wpactrl_t *, uint32_t *, tain_t *) ;
+extern int wpactrl_addnetwork (wpactrl_t *, uint32_t *, tain *) ;
 #define wpactrl_addnetwork_g(a, idp) wpactrl_addnetwork(a, (idp), &STAMP)
 
-extern wparesponse_t wpactrl_removenetwork (wpactrl_t *, uint32_t, tain_t *) ;
+extern wparesponse_t wpactrl_removenetwork (wpactrl_t *, uint32_t, tain *) ;
 #define wpactrl_removenetwork_g(a, id) wpactrl_removenetwork(a, (id), &STAMP)
 
-extern int wpactrl_findnetwork (wpactrl_t *, char const *, uint32_t *, tain_t *) ;
+extern int wpactrl_findnetwork (wpactrl_t *, char const *, uint32_t *, tain *) ;
 #define wpactrl_findnetwork_g(a, ssid, idp) wpactrl(a, ssid, (idp), &STAMP)
 
-extern wparesponse_t wpactrl_setnetworkoption (wpactrl_t *, uint32_t, char const *, char const *, tain_t *) ;
+extern wparesponse_t wpactrl_setnetworkoption (wpactrl_t *, uint32_t, char const *, char const *, tain *) ;
 #define wpactrl_setnetworkoption_g(a, id, var, val) wpactrl_setnetworkoption(a, id, var, (val), &STAMP)
 
-extern wparesponse_t wpactrl_selectnetwork (wpactrl_t *, uint32_t, tain_t *) ;
+extern wparesponse_t wpactrl_selectnetwork (wpactrl_t *, uint32_t, tain *) ;
 #define wpactrl_selectnetwork_g(a, id) wpactrl_selectnetwork(a, (id), &STAMP)
 
-extern int wpactrl_associate (wpactrl_t *, char const *, char const *, tain_t *) ;
+extern int wpactrl_associate (wpactrl_t *, char const *, char const *, tain *) ;
 #define wpactrl_associate_g(a, ssid, psk) wpactrl_associate(a, ssid, (psk), &STAMP)
 
-extern int wpactrl_startscan (wpactrl_t *, wpactrl_xchg_t *, wpactrl_xchg_cbres_t *, tain_t const *, tain_t *) ;
+extern int wpactrl_startscan (wpactrl_t *, wpactrl_xchg_t *, wpactrl_xchg_cbres_t *, tain const *, tain *) ;
 #define wpactrl_startscan_g(a, xchg, res, limit) wpactrl_startscan(a, xchg, res, (limit), &STAMP)
 
 #ifdef __cplusplus

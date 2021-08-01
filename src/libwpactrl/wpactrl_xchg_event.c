@@ -18,7 +18,7 @@ static inline size_t wpactrl_findmsg (wpactrl_t *a, char const *filter)
   return i ;
 }
 
-int wpactrl_xchg_event (wpactrl_t *a, wpactrl_xchg_t *dt, tain_t *stamp)
+int wpactrl_xchg_event (wpactrl_t *a, wpactrl_xchg_t *dt, tain *stamp)
 {
   size_t pos, len ;
   if (dt->i >= dt->n) return 2 ;

@@ -11,7 +11,7 @@ struct wparesponse_map_s
   wparesponse_t r ;
 } ;
 
-wparesponse_t wpactrl_command (wpactrl_t *a, char const *s, tain_t *stamp)
+wparesponse_t wpactrl_command (wpactrl_t *a, char const *s, tain *stamp)
 {
   static struct wparesponse_map_s const wparesponses[] =
   {

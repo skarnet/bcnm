@@ -4,7 +4,7 @@
 #include <skalibs/tai.h>
 #include <bcnm/wpactrl.h>
 
-int wpactrl_xchg_timeout (wpactrl_t *a, wpactrl_xchg_t *dt, tain_t const *stamp)
+int wpactrl_xchg_timeout (wpactrl_t *a, wpactrl_xchg_t *dt, tain const *stamp)
 {
   if (!tain_less(stamp, &dt->deadline))
   {

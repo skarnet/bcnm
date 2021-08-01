@@ -4,7 +4,7 @@
 #include <skalibs/uint32.h>
 #include <bcnm/wpactrl.h>
 
-wparesponse_t wpactrl_setnetworkoption (wpactrl_t *a, uint32_t id, char const *var, char const *val, tain_t *stamp)
+wparesponse_t wpactrl_setnetworkoption (wpactrl_t *a, uint32_t id, char const *var, char const *val, tain *stamp)
 {
   size_t varlen = strlen(var) ;
   size_t vallen = strlen(val) ;

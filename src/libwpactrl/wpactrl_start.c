@@ -14,9 +14,9 @@
 #include <bcnm/wpactrl.h>
 #include "wpactrl-internal.h"
 
-int wpactrl_start (wpactrl_t *a, char const *path, unsigned int timeout, tain_t *stamp)
+int wpactrl_start (wpactrl_t *a, char const *path, unsigned int timeout, tain *stamp)
 {
-  tain_t tto, deadline ;
+  tain tto, deadline ;
   int fda, fds ;
   stralloc sa = STRALLOC_ZERO ;
   if (timeout) tain_from_millisecs(&tto, timeout) ;
