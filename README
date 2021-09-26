@@ -4,7 +4,7 @@ bcnm - a better client network manager
  bcnm is currently a set of tools to control the client side of a
 WiFi connection.
 
- Ultimately, it aimes to become a network manager for client machines,
+ Ultimately, it aims to become a network manager for client machines,
 similar to NetworkManager, wicd or ConnMan.
  It works out-of-the-box on Linux and is easily portable to other
 Unix systems.
