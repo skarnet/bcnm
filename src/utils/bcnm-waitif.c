@@ -3,7 +3,7 @@
 #include <string.h>
 #include <net/if.h>
 
-#include <skalibs/strerr2.h>
+#include <skalibs/strerr.h>
 #include <skalibs/sgetopt.h>
 #include <skalibs/types.h>
 #include <skalibs/tai.h>
