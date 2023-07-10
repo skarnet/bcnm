@@ -191,9 +191,9 @@ for arg ; do
     --enable-absolute-paths|--enable-absolute-paths=yes) abspath=true ;;
     --disable-absolute-paths|--enable-absolute-paths=no) abspath=false ;;
     --enable-*|--disable-*|--with-*|--without-*|--*dir=*) ;;
+    --with-tmpdir=*) tmpdir=${arg#*=} ;;
     --host=*|--target=*) target=${arg#*=} ;;
     --build=*) build=${arg#*=} ;;
-    --with-tmpdir=*) tmpdir=${arg#*=} ;;
     -* ) echo "$0: unknown option $arg" ;;
     *=*) eval "$arg" ;;
     *) target=$arg ;;
