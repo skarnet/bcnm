@@ -1,5 +1,11 @@
 Changelog for bcnm
 
+In 0.0.1.8
+----------
+
+ - Install static libraries in /usr/lib by default.
+
+
 In 0.0.1.7
 ----------
 
