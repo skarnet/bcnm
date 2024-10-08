@@ -33,3 +33,4 @@ wpactrl_xchg_start.o
 wpactrl_xchg_timeout.o
 wpactrl_xchg_zero.o
 wpactrl_zero.o
+-lskarnet
