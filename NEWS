@@ -1,9 +1,10 @@
 Changelog for bcnm
 
-In 0.0.1.9
+In 0.0.2.0
 ----------
 
  - Bugfixes.
+ - pkg-config support.
 
 
 In 0.0.1.8
