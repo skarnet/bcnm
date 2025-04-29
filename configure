@@ -184,7 +184,7 @@ for arg ; do
     --pkgconfigdir=*) pkgconfigdir=${arg#*=} ;;
     --with-sysdeps=*) sysdeps=${arg#*=} manualsysdeps=true ;;
     --with-include=*) var=${arg#*=} ; stripdir var ; addincpath="$addincpath -I$var" ; depincpath="${depincpath}${depincpath:+ }-I$var" ;;
-    --with-lib=*) var=${arg#*=} ; stripdir var ; addlibspath="$addlibspath -L$var" ; deplibpath="${deplibpath}${deplibpath:+ }-I$var" ; vpaths="$vpaths $var" ;;
+    --with-lib=*) var=${arg#*=} ; stripdir var ; addlibspath="$addlibspath -L$var" ; deplibpath="${deplibpath}${deplibpath:+ }-L$var" ; vpaths="$vpaths $var" ;;
     --with-dynlib=*) var=${arg#*=} ; stripdir var ; addlibdpath="$addlibdpath -L$var" ; vpathd="$vpathd $var" ;;
     --with-pkgconfig=*) pkgconf=${arg#*=} ;;
     --with-pkgconfig) pkgconf=${PKG_CONFIG:-pkg-config} ;;
@@ -406,7 +406,7 @@ tryldflag LDFLAGS_AUTO -Wl,--sort-common
 CPPFLAGS_AUTO="${CPPFLAGS_AUTO}${addincpath}"
 
 if $evenmorestatic ; then
-  LDFLAGS_NOSHARED=-static
+  LDFLAGS_NOSHARED=" -static"
 fi
 
 if $shared ; then
@@ -466,7 +466,7 @@ CFLAGS := ${CFLAGS}${CFLAGS_POST:+ }$CFLAGS_POST
 LDFLAGS_AUTO := $LDFLAGS_AUTO
 LDFLAGS := ${LDFLAGS}${LDFLAGS_POST:+ }$LDFLAGS_POST
 LDFLAGS_SHARED := $LDFLAGS_SHARED
-LDFLAGS_NOSHARED := $LDFLAGS_NOSHARED
+LDFLAGS_NOSHARED :=$LDFLAGS_NOSHARED
 CROSS_COMPILE := $cross
 
 vpath lib%.a$vpaths
