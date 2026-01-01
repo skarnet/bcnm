@@ -2,9 +2,11 @@
 
 #include <skalibs/sysdeps.h>
 #include <skalibs/nonposix.h>
+
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include <errno.h>
+
 #include <bcnm/wpactrl.h>
 #include "wpactrl-internal.h"
 
@@ -34,8 +36,9 @@ ssize_t wpactrl_fd_recv (int fd, char *s, size_t len)
     .msg_control = 0,
     .msg_controllen = 0
   } ;
+  int e = errno ;
   ssize_t r ;
   do r = recvmsg(fd, &msghdr, bsd_braindeadness_workaround_flags) ;
   while (r == -1 && errno == EINTR) ;
-  return r > 0 && msghdr.msg_flags & MSG_TRUNC ? (errno = EMSGSIZE, -1) : r ;
+  return r > 0 && msghdr.msg_flags & MSG_TRUNC ? (errno = EMSGSIZE, -1) : (errno = e, r) ;
 }
